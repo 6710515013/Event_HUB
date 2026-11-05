@@ -1,0 +1,475 @@
+<!-- สืบทอดโครงสร้างหลักของเว็บไซต์จาก base.html -->
+{% extends "base.html" %}
+
+<!-- กำหนดชื่อหน้าเว็บที่จะแสดงบน Browser Tab -->
+{% block title %}Organizer Dashboard | EventHub{% endblock %}
+
+<!-- เริ่มส่วนเนื้อหาของหน้าเว็บ -->
+{% block content %}
+
+<style>
+    /* กำหนดตัวแปรสีหลักสำหรับ Organizer Dashboard */
+    :root {
+        --dashboard-primary: #0878F9;       /* สีหลักของ Dashboard */
+        --dashboard-primary-dark: #075FC5;   /* สีหลักโทนเข้ม */
+        --dashboard-primary-light: #DCEBFC;  /* สีหลักโทนอ่อน */
+        --dashboard-background: #F0F5FC;     /* สีพื้นหลัง Dashboard */
+        --dashboard-card: #FFFFFF;           /* สีพื้นหลัง Card */
+        --dashboard-text: #172033;           /* สีข้อความหลัก */
+        --dashboard-muted: #64748B;          /* สีข้อความรอง */
+        --dashboard-border: #E2E8F0;          /* สีเส้นขอบ */
+        --dashboard-success: #15803D;         /* สีสถานะสำเร็จ */
+        --dashboard-success-light: #DCFCE7;   /* สีพื้นหลังสถานะสำเร็จ */
+    }
+
+    /* กำหนดพื้นที่หลักของ Organizer Dashboard */
+    .organizer-dashboard {
+        background: var(--dashboard-background);
+        min-height: 100vh; /* ให้พื้นหลังมีความสูงอย่างน้อยเต็มหน้าจอ */
+        padding: 32px;     /* กำหนดระยะห่างด้านใน */
+        color: var(--dashboard-text);
+    }
+
+    /* จำกัดความกว้างเนื้อหาและจัดให้อยู่กึ่งกลาง */
+    .organizer-container {
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    /* จัดวางส่วนหัว Dashboard */
+    .organizer-header {
+        display: flex;
+        justify-content: space-between; /* แยกข้อความกับ Role ออกจากกัน */
+        align-items: center;            /* จัดให้อยู่กึ่งกลางแนวตั้ง */
+        gap: 20px;
+        flex-wrap: wrap;                /* ให้ขึ้นบรรทัดใหม่เมื่อพื้นที่ไม่พอ */
+        margin-bottom: 28px;
+    }
+
+    /* กำหนดรูปแบบหัวข้อ Dashboard */
+    .organizer-header h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 8px;
+        color: #123B70;
+    }
+
+    /* กำหนดรูปแบบข้อความอธิบายใต้หัวข้อ */
+    .organizer-header p {
+        color: #64748B;
+        font-size: 15px;
+        margin: 0;
+    }
+
+    /* รูปแบบป้ายแสดง Role Organizer */
+    .organizer-role {
+        background: #DCEBFC;
+        color: #075FC5;
+        padding: 9px 16px;
+        border-radius: 24px; /* ทำให้ป้ายมีมุมโค้ง */
+        font-size: 13px;
+        font-weight: 600;
+        flex-shrink: 0;      /* ป้องกันป้ายถูกบีบจนเล็กเกินไป */
+    }
+
+    /* กำหนดรูปแบบ Welcome Card */
+    .organizer-welcome {
+        position: relative;
+        overflow: hidden; /* ซ่อนเนื้อหาที่เกินขอบ Card */
+        background: linear-gradient(
+            120deg,
+            #DCEBFC 0%,
+            #EAF4FF 55%,
+            #C9E3FF 100%
+        ); /* ไล่เฉดสีพื้นหลังจากซ้ายไปขวา */
+        color: #123B70;
+        padding: 28px 32px;
+        border-radius: 22px;
+        margin-bottom: 28px;
+        border: 1px solid #D2E5FC;
+        box-shadow: 0 8px 24px rgba(8, 120, 249, 0.08);
+    }
+
+    /* กำหนดรูปแบบหัวข้อภายใน Welcome Card */
+    .organizer-welcome h2 {
+        font-size: 23px;
+        font-weight: 700;
+        color: #123B70;
+        margin: 0 0 10px;
+    }
+
+    /* กำหนดรูปแบบข้อความต้อนรับ */
+    .organizer-welcome p {
+        font-size: 15px;
+        line-height: 1.7; /* ระยะห่างระหว่างบรรทัด */
+        color: #526781;
+        margin: 0;
+    }
+
+    /* จัดตำแหน่งกล่องสถิติให้อยู่กึ่งกลาง */
+    .organizer-stats {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 28px;
+    }
+
+    /* กำหนดรูปแบบ Card แสดงจำนวนกิจกรรม */
+    .organizer-stat-card {
+        background: var(--dashboard-card);
+        border: 1px solid var(--dashboard-border);
+        border-radius: 16px;
+        padding: 24px;
+        width: 100%;
+        max-width: 500px;
+        text-align: center; /* จัดข้อความให้อยู่กึ่งกลาง */
+        box-shadow: 0 3px 12px rgba(23, 32, 51, 0.03);
+    }
+
+    /* รูปแบบชื่อสถิติ */
+    .organizer-stat-label {
+        color: var(--dashboard-muted);
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 12px;
+    }
+
+    /* รูปแบบตัวเลขสถิติ */
+    .organizer-stat-value {
+        color: var(--dashboard-primary);
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    /* รูปแบบข้อความเพิ่มเติมใต้ตัวเลข */
+    .organizer-stat-note {
+        color: var(--dashboard-muted);
+        font-size: 13px;
+        margin-top: 10px;
+    }
+
+    /* รูปแบบกล่อง Section แต่ละส่วนของ Dashboard */
+    .organizer-section {
+        background: var(--dashboard-card);
+        border: 1px solid var(--dashboard-border);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 3px 12px rgba(23, 32, 51, 0.03);
+    }
+
+    /* จัดวางหัวข้อของแต่ละ Section */
+    .organizer-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    /* รูปแบบหัวข้อ Section */
+    .organizer-section h2 {
+        font-size: 19px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    /* รูปแบบข้อความอธิบาย Section */
+    .organizer-section-description {
+        color: var(--dashboard-muted);
+        font-size: 13px;
+        margin-top: 6px;
+    }
+
+    /* จัดรายการกิจกรรมด้วย Grid */
+    .organizer-event-list {
+        display: grid;
+        gap: 14px; /* ระยะห่างระหว่างรายการ */
+    }
+
+    /* รูปแบบ Card ของกิจกรรมแต่ละรายการ */
+    .organizer-event-item {
+        border: 1px solid var(--dashboard-border);
+        border-radius: 12px;
+        padding: 20px;
+        transition: 0.2s ease; /* ทำให้การเปลี่ยนรูปแบบนุ่มนวล */
+    }
+
+    /* เปลี่ยนสีขอบและพื้นหลังเมื่อเมาส์ชี้ที่กิจกรรม */
+    .organizer-event-item:hover {
+        border-color: var(--dashboard-primary);
+        background: #F8FBFF;
+    }
+
+    /* รูปแบบชื่อกิจกรรม */
+    .organizer-event-item h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 8px;
+    }
+
+    /* รูปแบบคำอธิบายกิจกรรม */
+    .organizer-event-item p {
+        color: var(--dashboard-muted);
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* รูปแบบป้ายแสดงจำนวนผู้ลงทะเบียน */
+    .organizer-event-count {
+        display: inline-block;
+        background: var(--dashboard-primary-light);
+        color: var(--dashboard-primary-dark);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 14px;
+    }
+
+    /* รูปแบบข้อความเมื่อไม่มีข้อมูลกิจกรรม */
+    .organizer-empty {
+        background: #F8FAFC;
+        border: 1px dashed #CBD5E1; /* เส้นขอบแบบประ */
+        border-radius: 12px;
+        padding: 28px 20px;
+        text-align: center;
+        color: var(--dashboard-muted);
+        font-size: 14px;
+    }
+
+    /* รูปแบบข้อความสำคัญภายใน Empty State */
+    .organizer-empty strong {
+        display: block; /* แยกข้อความเป็นบรรทัด */
+        color: var(--dashboard-text);
+        font-size: 15px;
+        margin-bottom: 8px;
+    }
+
+    /* ปรับรูปแบบ Dashboard สำหรับหน้าจอขนาดเล็ก */
+    @media (max-width: 768px) {
+
+        /* ลดระยะห่างรอบ Dashboard บนมือถือ */
+        .organizer-dashboard {
+            padding: 18px;
+        }
+
+        /* ลดระยะห่างภายใน Welcome Card */
+        .organizer-welcome {
+            padding: 24px;
+        }
+
+        /* ลดระยะห่างภายใน Section */
+        .organizer-section {
+            padding: 18px;
+        }
+
+        /* ลดขนาดหัวข้อ Dashboard บนมือถือ */
+        .organizer-header h1 {
+            font-size: 24px;
+        }
+
+        /* จัดกล่องสถิติให้เหมาะกับหน้าจอแคบ */
+        .organizer-stats {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<!-- พื้นที่หลักของ Organizer Dashboard -->
+<main class="organizer-dashboard">
+
+    <!-- Container จำกัดความกว้างและจัดเนื้อหาให้อยู่กึ่งกลาง -->
+    <div class="organizer-container">
+
+        <!-- ส่วนหัว Dashboard -->
+        <header class="organizer-header">
+            <div>
+                <!-- แสดงชื่อหน้า Dashboard -->
+                <h1>Organizer Dashboard</h1>
+
+                <!-- คำอธิบายหน้าที่ของ Dashboard -->
+                <p>
+                    ภาพรวมกิจกรรมและการลงทะเบียนที่คุณดูแล
+                </p>
+            </div>
+
+            <!-- แสดง Role ของผู้ใช้ -->
+            <span class="organizer-role">
+                Organizer
+            </span>
+        </header>
+
+        <!-- ส่วนต้อนรับ Organizer -->
+        <section class="organizer-welcome">
+            <div class="organizer-welcome-content">
+
+                <!-- แสดง Username ของผู้ใช้จาก Context -->
+                <h2>Welcome, {{ user.username }}!</h2>
+
+                <!-- ข้อความต้อนรับ -->
+                <p>
+                    ยินดีต้อนรับสู่ EventHub
+                </p>
+            </div>
+        </section>
+
+        <!-- ส่วนแสดงสถิติของ Organizer -->
+        <section class="organizer-stats">
+
+            <!-- Card แสดงจำนวนกิจกรรมที่สร้าง -->
+            <article class="organizer-stat-card">
+
+                <!-- ชื่อสถิติ -->
+                <div class="organizer-stat-label">
+                    Total Events Created
+                </div>
+
+                <!-- แสดงจำนวนกิจกรรม
+                     default ใช้ค่า "—" หากตัวแปรไม่มีค่าหรือเป็นค่าว่าง -->
+                <div class="organizer-stat-value">
+                    {{ total_events|default:"—" }}
+                </div>
+
+                <!-- คำอธิบายสถิติ -->
+                <div class="organizer-stat-note">
+                    จำนวนกิจกรรมที่คุณสร้าง
+                </div>
+            </article>
+
+        </section>
+
+        <!-- Section แสดงกิจกรรมที่ Organizer สร้าง -->
+        <section class="organizer-section">
+
+            <!-- ส่วนหัวของ My Events -->
+            <div class="organizer-section-header">
+                <div>
+                    <h2>My Events</h2>
+
+                    <!-- คำอธิบายรายการกิจกรรม -->
+                    <p class="organizer-section-description">
+                        รายการกิจกรรมที่คุณเป็นผู้จัด
+                    </p>
+                </div>
+            </div>
+
+            <!-- ตรวจสอบว่ามีข้อมูลกิจกรรมหรือไม่ -->
+            {% if my_events %}
+
+                <!-- Container สำหรับแสดงรายการกิจกรรม -->
+                <div class="organizer-event-list">
+
+                    <!-- วนลูปแสดงกิจกรรมแต่ละรายการ -->
+                    {% for event in my_events %}
+
+                        <!-- Card ของกิจกรรม -->
+                        <article class="organizer-event-item">
+
+                            <!-- แสดงชื่อกิจกรรม -->
+                            <h3>{{ event.title }}</h3>
+
+                            <!-- แสดงรายละเอียดกิจกรรม -->
+                            <p>
+                                {{ event.description }}
+                            </p>
+
+                            <!-- แสดงจำนวนผู้ลงทะเบียน -->
+                            <span class="organizer-event-count">
+                                Registrations:
+
+                                <!-- default แสดง 0 เมื่อไม่มีจำนวนผู้ลงทะเบียน -->
+                                {{ event.registration_count|default:"0" }}
+                            </span>
+
+                        </article>
+
+                    <!-- จบการวนลูปกิจกรรม -->
+                    {% endfor %}
+
+                </div>
+
+            <!-- กรณีไม่มีข้อมูลกิจกรรม -->
+            {% else %}
+
+                <!-- กล่องข้อความแจ้งว่าไม่มีข้อมูล -->
+                <div class="organizer-empty">
+                    <strong>
+                        You have not created any events yet.
+                    </strong>
+
+                    กิจกรรมที่คุณสร้างจะแสดงในส่วนนี้
+                </div>
+
+            <!-- จบเงื่อนไขตรวจสอบกิจกรรม -->
+            {% endif %}
+
+        </section>
+
+        <!-- Section แสดงกิจกรรมที่กำลังจะจัดขึ้น -->
+        <section class="organizer-section">
+
+            <!-- ส่วนหัวของ Upcoming Events -->
+            <div class="organizer-section-header">
+                <div>
+                    <h2>Upcoming Events</h2>
+
+                    <!-- คำอธิบายรายการกิจกรรม -->
+                    <p class="organizer-section-description">
+                        กิจกรรมที่กำลังจะจัดขึ้น
+                    </p>
+                </div>
+            </div>
+
+            <!-- ตรวจสอบว่ามีกิจกรรมที่กำลังจะมาถึงหรือไม่ -->
+            {% if upcoming_events %}
+
+                <!-- Container สำหรับรายการกิจกรรม -->
+                <div class="organizer-event-list">
+
+                    <!-- วนลูปแสดงกิจกรรมแต่ละรายการ -->
+                    {% for event in upcoming_events %}
+
+                        <!-- Card ของกิจกรรม -->
+                        <article class="organizer-event-item">
+
+                            <!-- แสดงชื่อกิจกรรม -->
+                            <h3>{{ event.title }}</h3>
+
+                            <!-- แสดงรายละเอียดกิจกรรม -->
+                            <p>
+                                {{ event.description }}
+                            </p>
+
+                        </article>
+
+                    <!-- จบการวนลูป -->
+                    {% endfor %}
+
+                </div>
+
+            <!-- กรณีไม่มีข้อมูลกิจกรรม -->
+            {% else %}
+
+                <!-- แสดงข้อความเมื่อไม่มีกิจกรรมที่กำลังจะมาถึง -->
+                <div class="organizer-empty">
+                    <strong>
+                        No upcoming events to display.
+                    </strong>
+
+                    กิจกรรมที่กำลังจะจัดขึ้นจะแสดงในส่วนนี้
+                </div>
+
+            <!-- จบเงื่อนไขตรวจสอบ Upcoming Events -->
+            {% endif %}
+
+        </section>
+
+    </div>
+</main>
+
+<!-- จบส่วนเนื้อหาของหน้าเว็บ -->
+{% endblock %}
