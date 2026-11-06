@@ -36,6 +36,13 @@ class Event(models.Model):
     # ชื่อชมรมหรือองค์กร
     organization_name = models.CharField(max_length=150)
 
+    # รูปโปสเตอร์กิจกรรม
+    poster = models.ImageField(
+        upload_to="event_posters/",
+        blank=True,
+        null=True
+    )
+    
     # ข้อมูลกิจกรรม
     title = models.CharField(max_length=200)
     description = models.TextField()

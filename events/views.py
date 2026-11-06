@@ -16,7 +16,7 @@ def event_create(request):
         )
 
     if request.method == "POST":
-        form = EventForm(request.POST)
+        form = EventForm(request.POST, request.FILES)
 
         if form.is_valid():
             event = form.save(commit=False)
@@ -70,7 +70,7 @@ def event_edit(request, event_id):
     )
 
     if request.method == "POST":
-        form = EventForm(request.POST, instance=event)
+        form = EventForm(request.POST, request.FILES, instance=event)
 
         if form.is_valid():
             form.save()
