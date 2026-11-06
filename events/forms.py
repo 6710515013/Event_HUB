@@ -10,6 +10,7 @@ class EventForm(forms.ModelForm):
 
         fields = [
             "organization_name",
+            "poster",
             "title",
             "description",
             "categories",
