@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block title %}ประวัติการสมัครกิจกรรม{% endblock %}
@@ -6,11 +5,34 @@
 {% block content %}
 <div class="container">
     <h2>ประวัติการสมัครกิจกรรม</h2>
-
     <p>รายการกิจกรรมที่คุณเคยสมัครเข้าร่วม</p>
 
+    {# มีข้อมูล: แสดงเป็นตาราง #}
+    {% if registrations %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ชื่อกิจกรรม</th>
+                <th>เวลาที่กดสมัคร</th>
+            </tr>
+        </thead>
+        <tbody>
+            {# วนทีละรายการสมัคร #}
+            {% for r in registrations %}
+            <tr>
+                {# ชื่อกิจกรรม (field title ใน Event) #}
+                <td>{{ r.event.title }}</td>
+                {# วันเวลาที่นักศึกษากดสมัคร (field registered_at ใน Registration) #}
+                <td>{{ r.registered_at|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    {# ไม่มีข้อมูลจริงๆ ค่อยแสดงข้อความนี้ #}
     <div class="empty-state">
         <p>ยังไม่มีประวัติการสมัครกิจกรรม</p>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

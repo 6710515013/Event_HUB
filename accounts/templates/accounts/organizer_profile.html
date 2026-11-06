@@ -1,0 +1,44 @@
+{# หน้าแสดงข้อมูลโปรไฟล์ Organizer #}
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body text-center">
+        {# วงกลมแสดงตัวอักษรแรกของ username #}
+        <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center mb-3"
+             style="width:100px;height:100px;font-size:2.5rem;">
+          {{ profile_user.username|first|upper }}
+        </div>
+        <h4 class="mb-1">{{ profile_user.username }}</h4>
+        <span class="badge bg-primary">{{ profile_user.get_role_display }}</span>
+      </div>
+
+      {# ข้อมูลโปรไฟล์ทั้งหมด #}
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"><strong>ชื่อผู้ใช้:</strong> {{ profile_user.username }}</li>
+        <li class="list-group-item"><strong>ชื่อ:</strong> {{ profile_user.first_name|default:"ยังไม่ระบุ" }}</li>
+        <li class="list-group-item"><strong>นามสกุล:</strong> {{ profile_user.last_name|default:"ยังไม่ระบุ" }}</li>
+        <li class="list-group-item"><strong>รหัสนักศึกษา:</strong> {{ profile_user.student_id|default:"-" }}</li>
+        <li class="list-group-item"><strong>อีเมล:</strong> {{ profile_user.email|default:"ยังไม่ระบุ" }}</li>
+        <li class="list-group-item"><strong>บทบาท:</strong> {{ profile_user.get_role_display }}</li>
+      </ul>
+
+      {# ปุ่มล่างสุด: ไปหน้าแก้ไข + ออกจากระบบ #}
+      <div class="card-body d-flex gap-2">
+        <a href="{% url 'organizer_profile_edit' %}" class="btn btn-warning flex-fill">แก้ไขข้อมูลส่วนตัว</a>
+        {# Logout ส่งแบบ POST พร้อม csrf_token เพื่อความปลอดภัย #}
+        <form method="post" action="{% url 'logout' %}" class="flex-fill">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger w-100">ออกจากระบบ</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{# แสดงข้อความแจ้งเตือน เช่น "บันทึกข้อมูลเรียบร้อยแล้ว" (ลบบล็อกนี้ ถ้า base.html ของทีมแสดง messages อยู่แล้ว) #}
+{% for m in messages %}
+  <div class="alert alert-success">{{ m }}</div>
+{% endfor %}
+{% endblock %}
