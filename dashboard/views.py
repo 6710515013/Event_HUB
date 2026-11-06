@@ -1,245 +1,157 @@
-# ใช้ Decorator เพื่อตรวจสอบว่าผู้ใช้ Login แล้วหรือไม่
+
 from django.contrib.auth.decorators import login_required
-
-# ใช้ส่ง HTTP 403 Forbidden เมื่อผู้ใช้ไม่มีสิทธิ์เข้าถึงหน้า
 from django.http import HttpResponseForbidden
-
-# ใช้แสดง Template พร้อมส่งข้อมูลไปยังหน้าเว็บ
 from django.shortcuts import render
+from django.db.models import Count
+from django.utils import timezone
 
-#from types import SimpleNamespace #test ข้อมูลปลอม
+from events.models import Event, Category
+from registrations.models import Registration
+
+from events.student_views import get_filtered_events
+
+# หมวดหมู่กิจกรรมทั้ง 13 ประเภท
+CATEGORY_NAMES = [
+    "การศึกษา/อบรม",
+    "เทคโนโลยี/ไอที/โปรแกรมมิ่ง",
+    "กีฬา/การแข่งขัน",
+    "ศิลปะวัฒนธรรม",
+    "ดนตรี/ความบันเทิง",
+    "จิตอาสาบำเพ็ญประโยชน์",
+    "พบปะสร้างเครือข่าย",
+    "ธุรกิจ/อาชีพ/หางาน",
+    "ศาสนา/พัฒนาจิตใจ",
+    "สิ่งแวดล้อม/อนุรักษ์ธรรมชาติ",
+    "ท่องเที่ยว",
+    "สุขภาพ/พัฒนาตนเอง",
+    "เทศกาล",
+]
 
 
-# กำหนดให้ผู้ใช้ต้อง Login ก่อนเข้าหน้า Student Dashboard
-# หากยังไม่ได้ Login จะถูก Redirect ไปยัง URL ที่ชื่อว่า "login"
+
 @login_required(login_url="login")
 def student_dashboard(request):
-    
-    # ตรวจสอบว่า Role ของผู้ใช้เป็น STUDENT หรือไม่
-    # หากไม่ใช่ Student จะไม่อนุญาตให้เข้าถึงหน้านี้
+
+    # ตรวจสอบสิทธิ์ Student
     if request.user.role != "STUDENT":
-        # ส่งสถานะ HTTP 403 Forbidden กลับไปยังผู้ใช้
         return HttpResponseForbidden(
             "You do not have permission to access this page."
         )
-        
-    # กำหนดข้อมูลที่จะส่งไปแสดงผลใน Template
+
+    now = timezone.now()
+
+    # รับค่าจากช่องค้นหาและตัวกรอง
+    search_query = request.GET.get("q", "").strip()
+    selected_date = request.GET.get("date", "").strip()
+    selected_categories = request.GET.getlist("category")
+
+    # ใช้ระบบ Search และ Date Filter ของ Person 3
+    events = get_filtered_events(request)
+
+    # เพิ่มข้อมูลจำนวนผู้ลงทะเบียนและ Category
+    events = events.prefetch_related(
+        "categories"
+    ).annotate(
+        registration_count=Count("registrations", distinct=True)
+    )
+
+    # กรองตามประเภทกิจกรรมที่เลือกหลายประเภท
+    if selected_categories:
+        events = events.filter(
+            categories__id__in=selected_categories
+        ).distinct()
+
+    # เรียงกิจกรรมตามวันที่สร้างล่าสุด
+    events = events.order_by("-created_at")
+
+    # ดึงเฉพาะ 13 หมวดหมู่ที่กำหนดสำหรับ Dropdown
+    categories = Category.objects.filter(
+        name__in=CATEGORY_NAMES
+    ).order_by("id")
+
+    # ประวัติการลงทะเบียนของ Student
+    registrations = Registration.objects.filter(
+        student=request.user
+    ).select_related(
+        "event"
+    ).order_by("-registered_at")
+
+    # เก็บ ID กิจกรรมที่ลงทะเบียนแล้ว
+    registered_event_ids = set(
+        registrations.values_list("event_id", flat=True)
+    )
+
+    # กิจกรรมที่ Student ลงทะเบียนแล้ว
+    my_activities = Event.objects.filter(
+        registrations__student=request.user
+    ).distinct().order_by("start_datetime")
+
+    # กิจกรรมที่กำลังจะมาถึง
+    upcoming_events = Event.objects.filter(
+        start_datetime__gte=now
+    ).order_by("start_datetime")
+
+    # ส่งข้อมูลไปยัง Template
     context = {
-        # ส่งข้อมูลผู้ใช้ที่ Login อยู่ในปัจจุบัน
         "user": request.user,
-        
-        # ระบุ Role สำหรับนำไปแสดงผลในหน้า Dashboard
         "dashboard_role": "Student",
-        
-        # รายการกิจกรรมที่ Student สมัครไว้
-        # ใช้ List ว่างไว้ก่อนจนกว่าจะเชื่อมกับข้อมูลจริง
-        "my_activities": [],
-        
-        # รายการกิจกรรมที่กำลังจะมาถึง
-        "upcoming_events": [],
-        
-        # ประวัติการสมัครกิจกรรมของ Student
-        "registration_history": [],
+
+        # ข้อมูลกิจกรรมและตัวกรอง
+        "events": events,
+        "categories": categories,
+        "search_query": search_query,
+        "selected_date": selected_date,
+        "selected_categories": selected_categories,
+
+        # ข้อมูลการลงทะเบียน
+        "my_activities": my_activities,
+        "upcoming_events": upcoming_events,
+        "registration_history": registrations,
+        "registered_event_ids": registered_event_ids,
+
+        "now": now,
     }
 
-    # แสดง Template Student Dashboard
-    # พร้อมส่งข้อมูล context ไปให้ Template
     return render(
         request,
         "dashboard/student_dashboard.html",
         context
     )
 
-# กำหนดให้ผู้ใช้ต้อง Login ก่อนเข้าหน้า Organizer Dashboard
+
 @login_required(login_url="login")
 def organizer_dashboard(request):
 
-    # ตรวจสอบว่า Role ของผู้ใช้เป็น ORGANIZER หรือไม่
-    # หากไม่ใช่ Organizer จะไม่อนุญาตให้เข้าถึงหน้านี้
+    # ตรวจสอบสิทธิ์ Organizer
     if request.user.role != "ORGANIZER":
-        # ส่งสถานะ HTTP 403 Forbidden กลับไปยังผู้ใช้
         return HttpResponseForbidden(
             "You do not have permission to access this page."
         )
 
-    # กำหนดข้อมูลที่จะส่งไปแสดงผลใน Template
+    now = timezone.now()
+
+    # กิจกรรมที่ Organizer คนนี้เป็นผู้สร้าง
+    my_events = Event.objects.filter(
+        created_by=request.user
+    ).annotate(
+        registration_count=Count("registrations", distinct=True)
+    ).order_by("-created_at")
+
+    # กิจกรรมที่กำลังจะมาถึง
+    upcoming_events = my_events.filter(
+        start_datetime__gte=now
+    ).order_by("start_datetime")
+
     context = {
-        # ส่งข้อมูลผู้ใช้ที่ Login อยู่ในปัจจุบัน
         "user": request.user,
-        
-        # ระบุ Role สำหรับนำไปแสดงผลในหน้า Dashboard
         "dashboard_role": "Organizer",
-        
-        # จำนวนกิจกรรมที่ Organizer สร้าง
-        # ใช้ค่า 0 ไว้ก่อนจนกว่าจะเชื่อมกับข้อมูลจริง
-        "total_events": 0,
-        
-        # รายการกิจกรรมที่ Organizer สร้าง
-        "my_events": [],
-        
-        # รายการกิจกรรมที่กำลังจะมาถึง
-        "upcoming_events": [],
+        "total_events": my_events.count(),
+        "my_events": my_events,
+        "upcoming_events": upcoming_events,
     }
 
-    # แสดง Template Organizer Dashboard
-    # พร้อมส่งข้อมูล context ไปให้ Template
     return render(
         request,
         "dashboard/organizer_dashboard.html",
         context
     )
-
-
-
-
-#code test
-# @login_required(login_url="login")
-# def student_dashboard(request):
-
-#     if request.user.role != "STUDENT":
-#         return HttpResponseForbidden(
-#             "You do not have permission to access this page."
-#         )
-
-#     # Temporary test data for Student Dashboard
-
-#     my_activities = [
-#         SimpleNamespace(
-#             title="Python Programming Workshop",
-#             description=(
-#                 "ฝึกเขียนโปรแกรม Python "
-#                 "ตั้งแต่พื้นฐานจนถึงการประยุกต์ใช้งาน"
-#             ),
-#         ),
-#         SimpleNamespace(
-#             title="Web Development Bootcamp",
-#             description=(
-#                 "เรียนรู้การพัฒนาเว็บไซต์ด้วย HTML, CSS "
-#                 "และ Django"
-#             ),
-#         ),
-#     ]
-
-#     upcoming_events = [
-#         SimpleNamespace(
-#             title="Faculty Tech Talk",
-#             description=(
-#                 "กิจกรรมแลกเปลี่ยนความรู้ด้านเทคโนโลยี "
-#                 "และนวัตกรรมทางวิศวกรรม"
-#             ),
-#         ),
-#         SimpleNamespace(
-#             title="Computer Engineering Open House",
-#             description=(
-#                 "กิจกรรมเปิดบ้านภาควิชาวิศวกรรมคอมพิวเตอร์ "
-#                 "พร้อมกิจกรรม Workshop"
-#             ),
-#         ),
-#         SimpleNamespace(
-#             title="AI Innovation Workshop",
-#             description=(
-#                 "เรียนรู้การประยุกต์ใช้ AI "
-#                 "เพื่อแก้ปัญหาในชีวิตประจำวัน"
-#             ),
-#         ),
-#     ]
-
-#     registration_history = [
-#         SimpleNamespace(
-#             event=SimpleNamespace(
-#                 title="Python Programming Workshop"
-#             ),
-#         ),
-#         SimpleNamespace(
-#             event=SimpleNamespace(
-#                 title="Web Development Bootcamp"
-#             ),
-#         ),
-#         SimpleNamespace(
-#             event=SimpleNamespace(
-#                 title="Faculty Tech Talk"
-#             ),
-#         ),
-#     ]
-
-#     context = {
-#         "user": request.user,
-#         "dashboard_role": "Student",
-#         "my_activities": my_activities,
-#         "upcoming_events": upcoming_events,
-#         "registration_history": registration_history,
-#     }
-
-#     return render(
-#         request,
-#         "dashboard/student_dashboard.html",
-#         context
-#     )
-
-
-# @login_required(login_url="login")
-# def organizer_dashboard(request):
-
-#     if request.user.role != "ORGANIZER":
-#         return HttpResponseForbidden(
-#             "You do not have permission to access this page."
-#         )
-
-#     # Temporary test data for Organizer Dashboard
-#     my_events = [
-#         SimpleNamespace(
-#             title="Python Workshop",
-#             description=(
-#                 "A hands-on workshop introducing "
-#                 "Python programming."
-#             ),
-#             registration_count=25,
-#         ),
-#         SimpleNamespace(
-#             title="Web Development Bootcamp",
-#             description=(
-#                 "Learn the fundamentals of modern "
-#                 "web development."
-#             ),
-#             registration_count=18,
-#         ),
-#         SimpleNamespace(
-#             title="Faculty Tech Talk",
-#             description=(
-#                 "Explore new technologies and "
-#                 "engineering innovations."
-#             ),
-#             registration_count=40,
-#         ),
-#     ]
-
-#     upcoming_events = [
-#         SimpleNamespace(
-#             title="Python Workshop",
-#             description=(
-#                 "Date: 20 November 2026 | "
-#                 "Location: Computer Engineering Lab"
-#             ),
-#         ),
-#         SimpleNamespace(
-#             title="Web Development Bootcamp",
-#             description=(
-#                 "Date: 25 November 2026 | "
-#                 "Location: Faculty Auditorium"
-#             ),
-#         ),
-#     ]
-
-#     context = {
-#         "user": request.user,
-#         "dashboard_role": "Organizer",
-#         "total_events": len(my_events),
-#         "my_events": my_events,
-#         "upcoming_events": upcoming_events,
-#     }
-
-#     return render(
-#         request,
-#         "dashboard/organizer_dashboard.html",
-#         context
-#     )

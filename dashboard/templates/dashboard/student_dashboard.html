@@ -1,55 +1,43 @@
-<!-- สืบทอดโครงสร้างหลักของเว็บไซต์จาก base.html -->
 {% extends "base.html" %}
 
-<!-- กำหนดชื่อหน้าเว็บที่จะแสดงบน Browser Tab -->
 {% block title %}Student Dashboard | EventHub{% endblock %}
 
-<!-- เริ่มส่วนเนื้อหาของหน้าเว็บ -->
 {% block content %}
 
 <style>
-    /* กำหนดตัวแปรสีหลักสำหรับ Student Dashboard */
     :root {
-        --dashboard-primary: #16865C;        /* สีหลัก */
-        --dashboard-primary-dark: #126B49;    /* สีหลักโทนเข้ม */
-        --dashboard-primary-light: #DDF4E8;   /* สีหลักโทนอ่อน */
-
-        --dashboard-background: #F0F7F3;      /* สีพื้นหลัง */
-        --dashboard-card: #FFFFFF;             /* สีพื้นหลัง Card */
-
-        --dashboard-text: #173B2D;             /* สีข้อความหลัก */
-        --dashboard-muted: #64786D;            /* สีข้อความรอง */
-        --dashboard-border: #DDE9E1;            /* สีเส้นขอบ */
-
-        --dashboard-success: #15803D;           /* สีสถานะสำเร็จ */
-        --dashboard-success-light: #DCFCE7;     /* สีพื้นหลังสถานะสำเร็จ */
+        --dashboard-primary: #16865C;
+        --dashboard-primary-dark: #126B49;
+        --dashboard-primary-light: #DDF4E8;
+        --dashboard-background: #F0F7F3;
+        --dashboard-card: #FFFFFF;
+        --dashboard-text: #173B2D;
+        --dashboard-muted: #64786D;
+        --dashboard-border: #DDE9E1;
     }
 
-    /* กำหนดพื้นที่หลักของ Student Dashboard */
     .student-dashboard {
         background: var(--dashboard-background);
-        min-height: 100vh; /* ให้พื้นหลังมีความสูงอย่างน้อยเต็มหน้าจอ */
-        padding: 32px;     /* ระยะห่างด้านใน */
+        min-height: 100vh;
+        padding: 32px;
         color: var(--dashboard-text);
     }
 
-    /* จำกัดความกว้างเนื้อหาและจัดให้อยู่กึ่งกลาง */
     .dashboard-container {
         max-width: 1200px;
         margin: 0 auto;
     }
 
-    /* จัดวางส่วนหัว Dashboard */
+    /* Header */
     .dashboard-header {
         display: flex;
-        justify-content: space-between; /* แยกหัวข้อกับ Role */
+        justify-content: space-between;
         align-items: center;
         gap: 20px;
-        flex-wrap: wrap;                /* รองรับหน้าจอขนาดเล็ก */
+        flex-wrap: wrap;
         margin-bottom: 28px;
     }
 
-    /* รูปแบบหัวข้อ Dashboard */
     .dashboard-header h1 {
         font-size: 28px;
         font-weight: 700;
@@ -57,65 +45,13 @@
         color: #126B49;
     }
 
-    /* รูปแบบคำอธิบายใต้หัวข้อ */
     .dashboard-header p {
         color: #64786D;
         font-size: 15px;
         margin: 0;
     }
 
-    /* รูปแบบป้ายแสดง Role Student */
-    .dashboard-role {
-        background: #DDF4E8;
-        color: #126B49;
-        padding: 9px 16px;
-        border-radius: 24px;
-        font-size: 13px;
-        font-weight: 600;
-        flex-shrink: 0;
-    }
-
-    /* รูปแบบ Welcome Card */
-    .dashboard-welcome {
-        position: relative;
-        overflow: hidden; /* ซ่อนเนื้อหาที่เกินขอบ Card */
-
-        /* ไล่เฉดสีพื้นหลังของ Welcome Card */
-        background: linear-gradient(
-            120deg,
-            #DDF4E8 0%,
-            #EAF8F0 55%,
-            #C9EBD9 100%
-        );
-
-        color: #126B49;
-        padding: 28px 32px;
-        border-radius: 22px;
-        margin-bottom: 28px;
-        border: 1px solid #D0EBDD;
-
-        /* เพิ่มเงาให้ Card ดูมีมิติ */
-        box-shadow:
-            0 8px 24px rgba(22, 134, 92, 0.08);
-    }
-
-    /* รูปแบบหัวข้อภายใน Welcome Card */
-    .dashboard-welcome h2 {
-        font-size: 23px;
-        font-weight: 700;
-        color: #126B49;
-        margin: 0 0 10px;
-    }
-
-    /* รูปแบบข้อความต้อนรับ */
-    .dashboard-welcome p {
-        font-size: 15px;
-        line-height: 1.7; /* ระยะห่างระหว่างบรรทัด */
-        color: #526F60;
-        margin: 0;
-    }
-
-    /* รูปแบบกล่อง Section แต่ละส่วน */
+    /* Section */
     .dashboard-section {
         background: var(--dashboard-card);
         border: 1px solid var(--dashboard-border);
@@ -125,7 +61,6 @@
         box-shadow: 0 3px 12px rgba(23, 32, 51, 0.03);
     }
 
-    /* จัดวางหัวข้อของแต่ละ Section */
     .dashboard-section-header {
         display: flex;
         justify-content: space-between;
@@ -135,48 +70,221 @@
         flex-wrap: wrap;
     }
 
-    /* รูปแบบหัวข้อ Section */
     .dashboard-section h2 {
         font-size: 19px;
         font-weight: 700;
         margin: 0;
     }
 
-    /* รูปแบบคำอธิบาย Section */
     .dashboard-section-description {
         color: var(--dashboard-muted);
         font-size: 13px;
         margin-top: 6px;
     }
 
-    /* จัดรายการกิจกรรมด้วย Grid */
-    .dashboard-list {
-        display: grid;
-        gap: 14px; /* ระยะห่างระหว่าง Card */
+    /* Search Container */
+    .search-container {
+        margin-bottom: 24px;
     }
 
-    /* รูปแบบ Card ของกิจกรรมแต่ละรายการ */
+    /* Search by name */
+    .event-search {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .event-search input[type="text"] {
+        flex: 1;
+        min-width: 0;
+        padding: 13px 16px;
+        border: 1px solid var(--dashboard-border);
+        border-radius: 10px;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .event-search input[type="text"]:focus,
+    .filter-row input:focus {
+        border-color: var(--dashboard-primary);
+    }
+
+    /* Search button */
+    .search-button {
+        width: 48px;
+        height: 45px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 10px;
+        background: var(--dashboard-primary);
+        color: white;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .search-button:hover {
+        background: var(--dashboard-primary-dark);
+    }
+
+    /* Date and Category filters */
+    .filter-row {
+        display: flex;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .filter-row input[type="date"] {
+        flex: 1;
+        min-width: 0;
+        box-sizing: border-box;
+        height: 45px;
+        padding: 0 14px;
+        border: 1px solid var(--dashboard-border);
+        border-radius: 10px;
+        background: white;
+        color: var(--dashboard-text);
+        font-size: 14px;
+        outline: none;
+    }
+
+    /* Category Dropdown */
+    .category-dropdown {
+        flex: 1;
+        min-width: 0;
+        position: relative;
+    }
+
+    .category-dropdown summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        box-sizing: border-box;
+        height: 45px;
+        min-height: 45px;
+        padding: 0 14px;
+        border: 1px solid var(--dashboard-border);
+        border-radius: 10px;
+        background: white;
+        color: var(--dashboard-text);
+        font-size: 14px;
+        cursor: pointer;
+        list-style: none;
+        outline: none;
+    }
+
+    .category-dropdown summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .category-dropdown summary::after {
+        content: "▼";
+        font-size: 11px;
+        color: var(--dashboard-muted);
+        transition: transform 0.2s ease;
+    }
+
+    .category-dropdown[open] summary {
+        border-color: var(--dashboard-primary);
+        border-radius: 10px 10px 0 0;
+    }
+
+    .category-dropdown[open] summary::after {
+        transform: rotate(180deg);
+    }
+
+    .category-dropdown summary:focus-visible {
+        border-color: var(--dashboard-primary);
+        box-shadow: 0 0 0 3px rgba(22, 134, 92, 0.12);
+    }
+
+    /* Checkbox list */
+    .category-dropdown-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 20;
+        max-height: 230px;
+        overflow-y: auto;
+        padding: 8px;
+        background: white;
+        border: 1px solid var(--dashboard-primary);
+        border-top: none;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 8px 18px rgba(23, 59, 45, 0.12);
+    }
+
+    .category-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 8px;
+        border-radius: 7px;
+        color: var(--dashboard-text);
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .category-option:hover {
+        background: var(--dashboard-primary-light);
+    }
+
+    .category-option input[type="checkbox"] {
+        width: 17px;
+        height: 17px;
+        margin: 0;
+        accent-color: var(--dashboard-primary);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    .category-option span {
+        line-height: 1.5;
+    }
+
+    /* Clear filters */
+    .clear-filter {
+        display: inline-block;
+        margin-top: 12px;
+        color: var(--dashboard-primary-dark);
+        font-size: 13px;
+        text-decoration: none;
+    }
+
+    .clear-filter:hover {
+        text-decoration: underline;
+    }
+
+    /* Event List */
+
+    .event-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
     .dashboard-item {
+        min-width: 0;
         border: 1px solid var(--dashboard-border);
         border-radius: 12px;
         padding: 18px;
-        transition: 0.2s ease; /* ทำให้ Hover เปลี่ยนอย่างนุ่มนวล */
+        transition: 0.2s ease;
     }
 
-    /* เปลี่ยนสีขอบและพื้นหลังเมื่อเมาส์ชี้ที่กิจกรรม */
     .dashboard-item:hover {
         border-color: var(--dashboard-primary);
         background: #F5FBF7;
     }
 
-    /* รูปแบบชื่อกิจกรรม */
     .dashboard-item h3 {
         font-size: 16px;
         font-weight: 600;
         margin: 0 0 8px;
     }
 
-    /* รูปแบบรายละเอียดกิจกรรม */
     .dashboard-item p {
         color: var(--dashboard-muted);
         font-size: 14px;
@@ -184,10 +292,26 @@
         margin: 0;
     }
 
-    /* รูปแบบข้อความเมื่อไม่มีข้อมูล */
+    /* Event Categories */
+    .event-categories {
+        margin-top: 8px;
+        font-size: 14px;
+    }
+
+    .event-category-badge {
+        display: inline-block;
+        margin: 4px 4px 0 0;
+        padding: 4px 9px;
+        border-radius: 20px;
+        background: var(--dashboard-primary-light);
+        color: var(--dashboard-primary-dark);
+        font-size: 12px;
+    }
+
+    /* Empty State */
     .dashboard-empty {
         background: #F8FAFC;
-        border: 1px dashed #CBD5E1; /* เส้นขอบแบบประ */
+        border: 1px dashed #CBD5E1;
         border-radius: 12px;
         padding: 28px 20px;
         text-align: center;
@@ -195,7 +319,6 @@
         font-size: 14px;
     }
 
-    /* รูปแบบข้อความสำคัญภายใน Empty State */
     .dashboard-empty strong {
         display: block;
         color: var(--dashboard-text);
@@ -203,255 +326,390 @@
         margin-bottom: 8px;
     }
 
-    /* กำหนดรูปแบบรายการประวัติการลงทะเบียน */
-    .dashboard-history-list {
-        list-style: none; /* เอาสัญลักษณ์รายการแบบปกติออก */
-        padding: 0;
-        margin: 0;
+    /* User Button */
+    .user-button {
+        display: inline-block;
+        padding: 10px 18px;
+        background: var(--dashboard-primary-light);
+        color: var(--dashboard-primary-dark);
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
     }
 
-    /* รูปแบบรายการแต่ละบรรทัดในประวัติ */
-    .dashboard-history-list li {
-        padding: 14px 0;
-        border-bottom: 1px solid var(--dashboard-border);
-        font-size: 14px;
+    /* Responsive */
+    @media (max-width: 600px) {
+        .event-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-row {
+            flex-direction: column;
+        }
+
+        .filter-row input[type="date"],
+        .category-dropdown {
+            width: 100%;
+        }
     }
 
-    /* เอาเส้นขอบด้านล่างของรายการสุดท้ายออก */
-    .dashboard-history-list li:last-child {
-        border-bottom: none;
-    }
-
-    /* เพิ่ม Bullet ด้านหน้ารายการประวัติ */
-    .dashboard-history-list li::before {
-        content: "•"; /* สัญลักษณ์ Bullet */
-        color: var(--dashboard-primary);
-        font-weight: bold;
-        margin-right: 10px;
-    }
-
-    /* ปรับรูปแบบ Dashboard สำหรับหน้าจอขนาดเล็ก */
     @media (max-width: 768px) {
-
-        /* ลดระยะห่างรอบ Dashboard บนมือถือ */
         .student-dashboard {
             padding: 18px;
         }
 
-        /* ลดระยะห่างภายใน Welcome Card */
-        .dashboard-welcome {
-            padding: 24px;
-        }
-
-        /* ลดระยะห่างภายใน Section */
         .dashboard-section {
             padding: 18px;
         }
 
-        /* ลดขนาดหัวข้อ Dashboard บนมือถือ */
         .dashboard-header h1 {
             font-size: 24px;
         }
     }
 </style>
 
-<!-- พื้นที่หลักของ Student Dashboard -->
+
 <main class="student-dashboard">
 
-    <!-- Container จำกัดความกว้างและจัดเนื้อหาให้อยู่กึ่งกลาง -->
     <div class="dashboard-container">
 
-        <!-- ส่วนหัว Dashboard -->
+        <!-- Header -->
         <header class="dashboard-header">
             <div>
-                <!-- แสดงชื่อหน้า Dashboard -->
-                <h1>Student Dashboard</h1>
-
-                <!-- คำอธิบายหน้าที่ของ Dashboard -->
-                <p>ภาพรวมกิจกรรมและการเข้าร่วมกิจกรรมของคุณ</p>
+                <h1>EventHub</h1>
+                <p>ค้นหาและเข้าร่วมกิจกรรมที่น่าสนใจ</p>
             </div>
 
-            <!-- แสดง Role ของผู้ใช้ -->
-            <span class="dashboard-role">
-                Student
-            </span>
+            <a href="#" class="user-button">
+                User
+            </a>
         </header>
 
-        <!-- ส่วนต้อนรับ Student -->
-        <section class="dashboard-welcome">
 
-            <!-- แสดง Username ของผู้ใช้จาก Context -->
-            <h2>Welcome, {{ user.username }}!</h2>
+        <!-- Search Bar -->
+        <div class="search-container">
 
-            <!-- ข้อความต้อนรับและอธิบายการใช้งาน Dashboard -->
-            <p>
-                ยินดีต้อนรับสู่ EventHub
-                ติดตามกิจกรรมของคณะและจัดการการเข้าร่วมกิจกรรม
-                ได้จากหน้า Dashboard นี้
-            </p>
-        </section>
+            <form method="GET" id="eventSearchForm">
 
-        <!-- Section แสดงกิจกรรมที่ Student ลงทะเบียน -->
-        <section class="dashboard-section">
+                <!-- Search by activity name -->
+                <div class="event-search">
 
-            <!-- ส่วนหัวของ My Activities -->
+                    <input
+                        type="text"
+                        name="q"
+                        id="eventSearchInput"
+                        placeholder="ค้นหาชื่อกิจกรรม..."
+                        value="{{ search_query }}"
+                    >
+
+                    <button
+                        type="submit"
+                        class="search-button"
+                        title="ค้นหากิจกรรม"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             width="24"
+                             height="24"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2"
+                             stroke-linecap="round">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </button>
+
+                </div>
+
+
+                <!-- Date and Category filters -->
+                <div class="filter-row">
+
+                    <!-- Date Filter -->
+                    <input
+                        type="date"
+                        name="date"
+                        id="eventDateFilter"
+                        value="{{ selected_date }}"
+                        title="เลือกวันที่จัดกิจกรรม"
+                    >
+
+                    <!-- Category Dropdown -->
+                    <details class="category-dropdown" id="categoryDropdown">
+
+                        <summary>
+                            <span>
+                                เลือกประเภทกิจกรรม
+                                (<span id="selectedCategoryCount">{{ selected_categories|length }}</span>)
+                            </span>
+                        </summary>
+
+                        <div class="category-dropdown-list">
+
+                            {% for category in categories %}
+
+                                <label class="category-option">
+
+                                    <input
+                                        type="checkbox"
+                                        name="category"
+                                        value="{{ category.id }}"
+                                        {% if category.id|stringformat:"s" in selected_categories %}
+                                            checked
+                                        {% endif %}
+                                    >
+
+                                    <span>{{ category.name }}</span>
+
+                                </label>
+
+                            {% empty %}
+
+                                <p>ยังไม่มีประเภทกิจกรรม</p>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </details>
+
+                </div>
+
+
+                <!-- Clear Filters -->
+                <a
+                    href="{% url 'dashboard:student_dashboard' %}"
+                    class="clear-filter"
+                >
+                    ล้างการค้นหาและตัวกรอง
+                </a>
+
+            </form>
+
+        </div>
+
+
+        <!-- Events Section -->
+        <section class="dashboard-section" id="eventsSection">
+
             <div class="dashboard-section-header">
                 <div>
-                    <h2>My Activities</h2>
-
-                    <!-- คำอธิบายรายการกิจกรรม -->
+                    <h2>Events</h2>
                     <p class="dashboard-section-description">
-                        กิจกรรมที่คุณได้ลงทะเบียนเข้าร่วม
+                        ค้นหาและดูกิจกรรมที่น่าสนใจ
                     </p>
                 </div>
             </div>
 
-            <!-- ตรวจสอบว่ามีกิจกรรมที่ Student ลงทะเบียนหรือไม่ -->
-            {% if my_activities %}
 
-                <!-- Container สำหรับแสดงรายการกิจกรรม -->
+            {% if events %}
+
                 <div class="dashboard-list">
 
-                    <!-- วนลูปแสดงกิจกรรมแต่ละรายการ -->
-                    {% for activity in my_activities %}
+                    <div class="event-grid">
 
-                        <!-- Card ของกิจกรรม -->
-                        <article class="dashboard-item">
+                        {% for event in events %}
 
-                            <!-- แสดงชื่อกิจกรรม -->
-                            <h3>{{ activity.title }}</h3>
+                            <article class="dashboard-item">
 
-                            <!-- แสดงรายละเอียดกิจกรรม -->
-                            <p>{{ activity.description }}</p>
+                                <h3>{{ event.title }}</h3>
 
-                        </article>
+                                <p>
+                                    <strong>วันและเวลาจัด:</strong>
+                                    {{ event.start_datetime|date:"d/m/Y H:i" }}
+                                    -
+                                    {{ event.end_datetime|date:"d/m/Y H:i" }}
+                                </p>
 
-                    <!-- จบการวนลูปกิจกรรม -->
-                    {% endfor %}
+                                <p>
+                                    <strong>สถานที่:</strong>
+                                    {{ event.location }}
+                                </p>
 
-                </div>
+                                <p>
+                                    <strong>องค์กรผู้จัด:</strong>
+                                    {{ event.organization_name }}
+                                </p>
 
-            <!-- กรณีไม่มีข้อมูลกิจกรรม -->
+                                <div class="event-categories">
+
+                                    <strong>รูปแบบกิจกรรม:</strong>
+
+                                    {% for category in event.categories.all %}
+
+                                        <span class="event-category-badge">
+                                            {{ category.name }}
+                                        </span>
+
+                                    {% empty %}
+
+                                        <span>ยังไม่ได้ระบุรูปแบบกิจกรรม</span>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            </article>
+
+                        {% endfor %}
+
+                    </div>
+
             {% else %}
 
-                <!-- แสดงข้อความเมื่อ Student ยังไม่ได้ลงทะเบียนกิจกรรม -->
                 <div class="dashboard-empty">
-                    <strong>ยังไม่มีกิจกรรมที่ลงทะเบียน</strong>
-                    กิจกรรมที่คุณสมัครเข้าร่วมจะแสดงในส่วนนี้
+                    <strong>ไม่พบกิจกรรมที่ตรงกับการค้นหา</strong>
+                    ลองเปลี่ยนชื่อกิจกรรม วันที่ หรือประเภทกิจกรรม
                 </div>
 
-            <!-- จบเงื่อนไขตรวจสอบ My Activities -->
-            {% endif %}
-
-        </section>
-
-        <!-- Section แสดงกิจกรรมที่กำลังจะจัดขึ้น -->
-        <section class="dashboard-section">
-
-            <!-- ส่วนหัวของ Upcoming Events -->
-            <div class="dashboard-section-header">
-                <div>
-                    <h2>Upcoming Events</h2>
-
-                    <!-- คำอธิบายรายการกิจกรรม -->
-                    <p class="dashboard-section-description">
-                        กิจกรรมที่กำลังจะจัดขึ้น
-                    </p>
-                </div>
-            </div>
-
-            <!-- ตรวจสอบว่ามีกิจกรรมที่กำลังจะมาถึงหรือไม่ -->
-            {% if upcoming_events %}
-
-                <!-- Container สำหรับแสดงรายการกิจกรรม -->
-                <div class="dashboard-list">
-
-                    <!-- วนลูปแสดงกิจกรรมแต่ละรายการ -->
-                    {% for event in upcoming_events %}
-
-                        <!-- Card ของกิจกรรม -->
-                        <article class="dashboard-item">
-
-                            <!-- แสดงชื่อกิจกรรม -->
-                            <h3>{{ event.title }}</h3>
-
-                            <!-- แสดงรายละเอียดกิจกรรม -->
-                            <p>{{ event.description }}</p>
-
-                        </article>
-
-                    <!-- จบการวนลูปกิจกรรม -->
-                    {% endfor %}
-
-                </div>
-
-            <!-- กรณีไม่มีข้อมูลกิจกรรม -->
-            {% else %}
-
-                <!-- แสดงข้อความเมื่อไม่มีกิจกรรมที่กำลังจะจัดขึ้น -->
-                <div class="dashboard-empty">
-                    <strong>ยังไม่มีกิจกรรมที่กำลังจะจัดขึ้น</strong>
-                    เมื่อมีกิจกรรมใหม่ ข้อมูลจะแสดงในส่วนนี้
-                </div>
-
-            <!-- จบเงื่อนไขตรวจสอบ Upcoming Events -->
-            {% endif %}
-
-        </section>
-
-        <!-- Section แสดงประวัติการลงทะเบียนกิจกรรม -->
-        <section class="dashboard-section">
-
-            <!-- ส่วนหัวของ Registration History -->
-            <div class="dashboard-section-header">
-                <div>
-                    <h2>Registration History</h2>
-
-                    <!-- คำอธิบายประวัติการลงทะเบียน -->
-                    <p class="dashboard-section-description">
-                        ประวัติการลงทะเบียนกิจกรรมของคุณ
-                    </p>
-                </div>
-            </div>
-
-            <!-- ตรวจสอบว่ามีประวัติการลงทะเบียนหรือไม่ -->
-            {% if registration_history %}
-
-                <!-- แสดงประวัติการลงทะเบียนในรูปแบบรายการ -->
-                <ul class="dashboard-history-list">
-
-                    <!-- วนลูปแสดงประวัติแต่ละรายการ -->
-                    {% for registration in registration_history %}
-
-                        <!-- รายการประวัติการลงทะเบียน -->
-                        <li>
-
-                            <!-- แสดงชื่อกิจกรรมที่ลงทะเบียน -->
-                            {{ registration.event.title }}
-
-                        </li>
-
-                    <!-- จบการวนลูปประวัติ -->
-                    {% endfor %}
-
-                </ul>
-
-            <!-- กรณีไม่มีประวัติการลงทะเบียน -->
-            {% else %}
-
-                <!-- แสดงข้อความเมื่อยังไม่มีประวัติ -->
-                <div class="dashboard-empty">
-                    <strong>ยังไม่มีประวัติการลงทะเบียน</strong>
-                    ประวัติการเข้าร่วมกิจกรรมจะแสดงในส่วนนี้
-                </div>
-
-            <!-- จบเงื่อนไขตรวจสอบ Registration History -->
             {% endif %}
 
         </section>
 
     </div>
+
 </main>
 
-<!-- จบส่วนเนื้อหาของหน้าเว็บ -->
+
+<!-- Live Search -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById("eventSearchForm");
+    const searchInput = document.getElementById("eventSearchInput");
+    const dateFilter = document.getElementById("eventDateFilter");
+    const categoryDropdown = document.getElementById("categoryDropdown");
+    const selectedCategoryCount = document.getElementById(
+        "selectedCategoryCount"
+    );
+    const eventsSection = document.getElementById("eventsSection");
+
+    let searchTimer;
+    let controller;
+
+    async function performSearch() {
+
+        clearTimeout(searchTimer);
+
+        if (controller) {
+            controller.abort();
+        }
+
+        // เก็บค่าที่เลือกไว้ก่อนค้นหา
+        const selectedCategories = Array.from(
+            form.querySelectorAll('input[name="category"]:checked')
+        ).map(checkbox => checkbox.value);
+
+        const params = new URLSearchParams();
+
+        params.set("q", searchInput.value);
+        params.set("date", dateFilter.value);
+
+        selectedCategories.forEach(category => {
+            params.append("category", category);
+        });
+
+        const url = new URL(window.location.href);
+        url.search = params.toString();
+
+        controller = new AbortController();
+
+        try {
+
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                signal: controller.signal
+            });
+
+            if (!response.ok) {
+                throw new Error("Search request failed");
+            }
+
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+
+            const newSection = doc.getElementById("eventsSection");
+
+            if (newSection) {
+                eventsSection.innerHTML = newSection.innerHTML;
+
+                window.history.replaceState({}, "", url);
+            }
+
+            // คืนสถานะ Checkbox หลังค้นหา
+            selectedCategories.forEach(categoryId => {
+                const checkbox = form.querySelector(
+                    `input[name="category"][value="${categoryId}"]`
+                );
+
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+
+            // อัปเดตจำนวนประเภทที่เลือก
+            selectedCategoryCount.textContent = selectedCategories.length;
+
+        } catch (error) {
+
+            if (error.name !== "AbortError") {
+                console.error("Search error:", error);
+            }
+
+        }
+    }
+
+    // ค้นหาขณะพิมพ์
+    searchInput.addEventListener("input", function () {
+        clearTimeout(searchTimer);
+
+        searchTimer = setTimeout(function () {
+            performSearch();
+        }, 400);
+    });
+
+    // เลือกวันที่
+    dateFilter.addEventListener("change", performSearch);
+
+    // เลือก Checkbox หลายประเภท
+    form.querySelectorAll('input[name="category"]').forEach(function (checkbox) {
+
+        checkbox.addEventListener("change", function () {
+
+            const count = form.querySelectorAll(
+                'input[name="category"]:checked'
+            ).length;
+
+            selectedCategoryCount.textContent = count;
+
+            performSearch();
+        });
+
+    });
+
+    // ปุ่มค้นหา
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        performSearch();
+    });
+
+    // ปิด Dropdown เมื่อคลิกข้างนอก
+    document.addEventListener("click", function (event) {
+        if (
+            categoryDropdown &&
+            categoryDropdown.open &&
+            !categoryDropdown.contains(event.target)
+        ) {
+            categoryDropdown.open = false;
+        }
+    });
+
+});
+</script>
+
 {% endblock %}

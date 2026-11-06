@@ -18,8 +18,6 @@
         --dashboard-text: #172033;           /* สีข้อความหลัก */
         --dashboard-muted: #64748B;          /* สีข้อความรอง */
         --dashboard-border: #E2E8F0;          /* สีเส้นขอบ */
-        --dashboard-success: #15803D;         /* สีสถานะสำเร็จ */
-        --dashboard-success-light: #DCFCE7;   /* สีพื้นหลังสถานะสำเร็จ */
     }
 
     /* กำหนดพื้นที่หลักของ Organizer Dashboard */
@@ -73,82 +71,6 @@
         flex-shrink: 0;      /* ป้องกันป้ายถูกบีบจนเล็กเกินไป */
     }
 
-    /* กำหนดรูปแบบ Welcome Card */
-    .organizer-welcome {
-        position: relative;
-        overflow: hidden; /* ซ่อนเนื้อหาที่เกินขอบ Card */
-        background: linear-gradient(
-            120deg,
-            #DCEBFC 0%,
-            #EAF4FF 55%,
-            #C9E3FF 100%
-        ); /* ไล่เฉดสีพื้นหลังจากซ้ายไปขวา */
-        color: #123B70;
-        padding: 28px 32px;
-        border-radius: 22px;
-        margin-bottom: 28px;
-        border: 1px solid #D2E5FC;
-        box-shadow: 0 8px 24px rgba(8, 120, 249, 0.08);
-    }
-
-    /* กำหนดรูปแบบหัวข้อภายใน Welcome Card */
-    .organizer-welcome h2 {
-        font-size: 23px;
-        font-weight: 700;
-        color: #123B70;
-        margin: 0 0 10px;
-    }
-
-    /* กำหนดรูปแบบข้อความต้อนรับ */
-    .organizer-welcome p {
-        font-size: 15px;
-        line-height: 1.7; /* ระยะห่างระหว่างบรรทัด */
-        color: #526781;
-        margin: 0;
-    }
-
-    /* จัดตำแหน่งกล่องสถิติให้อยู่กึ่งกลาง */
-    .organizer-stats {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 28px;
-    }
-
-    /* กำหนดรูปแบบ Card แสดงจำนวนกิจกรรม */
-    .organizer-stat-card {
-        background: var(--dashboard-card);
-        border: 1px solid var(--dashboard-border);
-        border-radius: 16px;
-        padding: 24px;
-        width: 100%;
-        max-width: 500px;
-        text-align: center; /* จัดข้อความให้อยู่กึ่งกลาง */
-        box-shadow: 0 3px 12px rgba(23, 32, 51, 0.03);
-    }
-
-    /* รูปแบบชื่อสถิติ */
-    .organizer-stat-label {
-        color: var(--dashboard-muted);
-        font-size: 14px;
-        font-weight: 500;
-        margin-bottom: 12px;
-    }
-
-    /* รูปแบบตัวเลขสถิติ */
-    .organizer-stat-value {
-        color: var(--dashboard-primary);
-        font-size: 32px;
-        font-weight: 700;
-        line-height: 1.2;
-    }
-
-    /* รูปแบบข้อความเพิ่มเติมใต้ตัวเลข */
-    .organizer-stat-note {
-        color: var(--dashboard-muted);
-        font-size: 13px;
-        margin-top: 10px;
-    }
-
     /* รูปแบบกล่อง Section แต่ละส่วนของ Dashboard */
     .organizer-section {
         background: var(--dashboard-card);
@@ -169,6 +91,48 @@
         margin-bottom: 20px;
     }
 
+    /* ปุ่มเพิ่มกิจกรรม */
+    .organizer-add-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: var(--dashboard-primary);
+        color: #FFFFFF;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s ease;
+        flex-shrink: 0;
+    }
+
+    .organizer-add-button:hover {
+        background: var(--dashboard-primary-dark);
+        color: #FFFFFF;
+    }
+
+    /* แสดงกิจกรรม 2 รายการต่อแถว */
+    .organizer-event-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    /* ป้องกันเนื้อหาการ์ดล้น */
+    .organizer-event-item {
+        min-width: 0;
+    }
+
+    /* แสดง 1 รายการต่อแถวบนหน้าจอมือถือ */
+    @media (max-width: 768px) {
+        .organizer-event-list {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
     /* รูปแบบหัวข้อ Section */
     .organizer-section h2 {
         font-size: 19px;
@@ -181,12 +145,6 @@
         color: var(--dashboard-muted);
         font-size: 13px;
         margin-top: 6px;
-    }
-
-    /* จัดรายการกิจกรรมด้วย Grid */
-    .organizer-event-list {
-        display: grid;
-        gap: 14px; /* ระยะห่างระหว่างรายการ */
     }
 
     /* รูปแบบ Card ของกิจกรรมแต่ละรายการ */
@@ -216,6 +174,27 @@
         font-size: 14px;
         line-height: 1.6;
         margin: 0;
+    }
+
+    /* รูปแบบส่วนแสดงหมวดหมู่กิจกรรม */
+    .event-categories {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    /* รูปแบบป้ายหมวดหมู่กิจกรรม */
+    .event-category-badge {
+        display: inline-block;
+        background: var(--dashboard-primary-light);
+        color: var(--dashboard-primary-dark);
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
     }
 
     /* รูปแบบป้ายแสดงจำนวนผู้ลงทะเบียน */
@@ -257,11 +236,6 @@
             padding: 18px;
         }
 
-        /* ลดระยะห่างภายใน Welcome Card */
-        .organizer-welcome {
-            padding: 24px;
-        }
-
         /* ลดระยะห่างภายใน Section */
         .organizer-section {
             padding: 18px;
@@ -270,11 +244,6 @@
         /* ลดขนาดหัวข้อ Dashboard บนมือถือ */
         .organizer-header h1 {
             font-size: 24px;
-        }
-
-        /* จัดกล่องสถิติให้เหมาะกับหน้าจอแคบ */
-        .organizer-stats {
-            grid-template-columns: 1fr;
         }
     }
 </style>
@@ -303,167 +272,97 @@
             </span>
         </header>
 
-        <!-- ส่วนต้อนรับ Organizer -->
-        <section class="organizer-welcome">
-            <div class="organizer-welcome-content">
-
-                <!-- แสดง Username ของผู้ใช้จาก Context -->
-                <h2>Welcome, {{ user.username }}!</h2>
-
-                <!-- ข้อความต้อนรับ -->
-                <p>
-                    ยินดีต้อนรับสู่ EventHub
-                </p>
-            </div>
-        </section>
-
-        <!-- ส่วนแสดงสถิติของ Organizer -->
-        <section class="organizer-stats">
-
-            <!-- Card แสดงจำนวนกิจกรรมที่สร้าง -->
-            <article class="organizer-stat-card">
-
-                <!-- ชื่อสถิติ -->
-                <div class="organizer-stat-label">
-                    Total Events Created
-                </div>
-
-                <!-- แสดงจำนวนกิจกรรม
-                     default ใช้ค่า "—" หากตัวแปรไม่มีค่าหรือเป็นค่าว่าง -->
-                <div class="organizer-stat-value">
-                    {{ total_events|default:"—" }}
-                </div>
-
-                <!-- คำอธิบายสถิติ -->
-                <div class="organizer-stat-note">
-                    จำนวนกิจกรรมที่คุณสร้าง
-                </div>
-            </article>
-
-        </section>
-
         <!-- Section แสดงกิจกรรมที่ Organizer สร้าง -->
         <section class="organizer-section">
 
-            <!-- ส่วนหัวของ My Events -->
+            <!-- ส่วนหัว My Events และปุ่ม Add Event -->
             <div class="organizer-section-header">
                 <div>
                     <h2>My Events</h2>
-
-                    <!-- คำอธิบายรายการกิจกรรม -->
                     <p class="organizer-section-description">
                         รายการกิจกรรมที่คุณเป็นผู้จัด
                     </p>
                 </div>
-            </div>
 
-            <!-- ตรวจสอบว่ามีข้อมูลกิจกรรมหรือไม่ -->
+                <!-- ปุ่มเพิ่มกิจกรรม -->
+                <a href="#" class="organizer-add-button"> <!-- ถ้าได้ url มาแล้วให้แก้ส่วนนี้-->
+                    <span>+</span>
+                    Add Event
+                </a>
+            </div>
+            <!-- ตรวจสอบว่ามีกิจกรรมหรือไม่ -->
             {% if my_events %}
 
-                <!-- Container สำหรับแสดงรายการกิจกรรม -->
                 <div class="organizer-event-list">
 
-                    <!-- วนลูปแสดงกิจกรรมแต่ละรายการ -->
+                    <!-- วนลูปแสดงกิจกรรม -->
                     {% for event in my_events %}
 
-                        <!-- Card ของกิจกรรม -->
                         <article class="organizer-event-item">
 
-                            <!-- แสดงชื่อกิจกรรม -->
+                            <!-- ชื่อกิจกรรม -->
                             <h3>{{ event.title }}</h3>
 
-                            <!-- แสดงรายละเอียดกิจกรรม -->
+                            <!-- รายละเอียดกิจกรรม -->
                             <p>
                                 {{ event.description }}
                             </p>
 
-                            <!-- แสดงจำนวนผู้ลงทะเบียน -->
+                            <!-- วันและเวลาจัดกิจกรรม -->
+                            <p>
+                                <strong>วันและเวลาจัด:</strong>
+                                {{ event.start_datetime|date:"d/m/Y H:i" }}
+                                -
+                                {{ event.end_datetime|date:"d/m/Y H:i" }}
+                            </p>
+
+                            <!-- สถานที่ -->
+                            <p>
+                                <strong>สถานที่:</strong>
+                                {{ event.location }}
+                            </p>
+
+                            <!-- องค์กรผู้จัด -->
+                            <p>
+                                <strong>องค์กรผู้จัด:</strong>
+                                {{ event.organization_name }}
+                            </p>
+
+                            <!-- รูปแบบกิจกรรม -->
+                            <div class="event-categories">
+                                <strong>รูปแบบกิจกรรม:</strong>
+
+                                {% for category in event.categories.all %}
+                                    <span class="event-category-badge">
+                                        {{ category.name }}
+                                    </span>
+                                {% empty %}
+                                    <span>ยังไม่ได้ระบุรูปแบบกิจกรรม</span>
+                                {% endfor %}
+                            </div>
+
+                            <!-- จำนวนผู้ลงทะเบียน -->
                             <span class="organizer-event-count">
                                 Registrations:
-
-                                <!-- default แสดง 0 เมื่อไม่มีจำนวนผู้ลงทะเบียน -->
                                 {{ event.registration_count|default:"0" }}
                             </span>
 
                         </article>
 
-                    <!-- จบการวนลูปกิจกรรม -->
                     {% endfor %}
 
                 </div>
 
-            <!-- กรณีไม่มีข้อมูลกิจกรรม -->
-            {% else %}
+             {% else %}
 
-                <!-- กล่องข้อความแจ้งว่าไม่มีข้อมูล -->
+                <!-- กรณียังไม่มีกิจกรรม -->
                 <div class="organizer-empty">
                     <strong>
                         You have not created any events yet.
                     </strong>
-
                     กิจกรรมที่คุณสร้างจะแสดงในส่วนนี้
                 </div>
 
-            <!-- จบเงื่อนไขตรวจสอบกิจกรรม -->
-            {% endif %}
-
-        </section>
-
-        <!-- Section แสดงกิจกรรมที่กำลังจะจัดขึ้น -->
-        <section class="organizer-section">
-
-            <!-- ส่วนหัวของ Upcoming Events -->
-            <div class="organizer-section-header">
-                <div>
-                    <h2>Upcoming Events</h2>
-
-                    <!-- คำอธิบายรายการกิจกรรม -->
-                    <p class="organizer-section-description">
-                        กิจกรรมที่กำลังจะจัดขึ้น
-                    </p>
-                </div>
-            </div>
-
-            <!-- ตรวจสอบว่ามีกิจกรรมที่กำลังจะมาถึงหรือไม่ -->
-            {% if upcoming_events %}
-
-                <!-- Container สำหรับรายการกิจกรรม -->
-                <div class="organizer-event-list">
-
-                    <!-- วนลูปแสดงกิจกรรมแต่ละรายการ -->
-                    {% for event in upcoming_events %}
-
-                        <!-- Card ของกิจกรรม -->
-                        <article class="organizer-event-item">
-
-                            <!-- แสดงชื่อกิจกรรม -->
-                            <h3>{{ event.title }}</h3>
-
-                            <!-- แสดงรายละเอียดกิจกรรม -->
-                            <p>
-                                {{ event.description }}
-                            </p>
-
-                        </article>
-
-                    <!-- จบการวนลูป -->
-                    {% endfor %}
-
-                </div>
-
-            <!-- กรณีไม่มีข้อมูลกิจกรรม -->
-            {% else %}
-
-                <!-- แสดงข้อความเมื่อไม่มีกิจกรรมที่กำลังจะมาถึง -->
-                <div class="organizer-empty">
-                    <strong>
-                        No upcoming events to display.
-                    </strong>
-
-                    กิจกรรมที่กำลังจะจัดขึ้นจะแสดงในส่วนนี้
-                </div>
-
-            <!-- จบเงื่อนไขตรวจสอบ Upcoming Events -->
             {% endif %}
 
         </section>
