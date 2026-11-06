@@ -13,12 +13,20 @@
 {% if event %}
     <h2>Edit Event</h2>
     <p>Update your event information.</p>
+    
+    {% if event.poster %}
+        <p>Current Poster:</p>
+        <img src="{{ event.poster.url }}"
+             alt="{{ event.title }}"
+             style="max-width: 300px; height: auto;">
+    {% endif %}
+
 {% else %}
     <h2>Create New Event</h2>
     <p>Fill in the information below to create an event.</p>
 {% endif %}
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
 
