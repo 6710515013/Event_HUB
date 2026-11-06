@@ -274,6 +274,15 @@
         transition: 0.2s ease;
     }
 
+    /* รูปแบบโปสเตอร์กิจกรรม */
+    .dashboard-event-poster {
+        width: 100%;
+        max-height: 220px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 14px;
+    }
+
     .dashboard-item:hover {
         border-color: var(--dashboard-primary);
         background: #F5FBF7;
@@ -380,7 +389,7 @@
                 <p>ค้นหาและเข้าร่วมกิจกรรมที่น่าสนใจ</p>
             </div>
 
-            <a href="#" class="user-button">
+            <a href="{% url 'student_profile' %}" class="user-button">
                 User
             </a>
         </header>
@@ -502,7 +511,6 @@
                 </div>
             </div>
 
-
             {% if events %}
 
                 <div class="dashboard-list">
@@ -512,6 +520,15 @@
                         {% for event in events %}
 
                             <article class="dashboard-item">
+
+                                {% if event.poster %}
+                                    <img
+                                        src="{{ event.poster.url }}"
+                                        alt="โปสเตอร์กิจกรรม {{ event.title }}"
+                                        class="dashboard-event-poster"
+                                    >
+                                {% endif %}
+
 
                                 <h3>{{ event.title }}</h3>
 

@@ -71,6 +71,25 @@
         flex-shrink: 0;      /* ป้องกันป้ายถูกบีบจนเล็กเกินไป */
     }
 
+    /* ปุ่ม User สำหรับเข้าหน้า Organizer Profile */
+    .user-button {
+        display: inline-block;
+        background: var(--dashboard-primary-light);
+        color: var(--dashboard-primary-dark);
+        padding: 9px 16px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        flex-shrink: 0;
+        transition: 0.2s ease;
+    }
+
+    .user-button:hover {
+        background: var(--dashboard-primary);
+        color: #FFFFFF;
+    }
+
     /* รูปแบบกล่อง Section แต่ละส่วนของ Dashboard */
     .organizer-section {
         background: var(--dashboard-card);
@@ -123,6 +142,15 @@
     /* ป้องกันเนื้อหาการ์ดล้น */
     .organizer-event-item {
         min-width: 0;
+    }
+
+    /* รูปแบบโปสเตอร์กิจกรรม */
+    .organizer-event-poster {
+        width: 100%;
+        max-height: 220px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 14px;
     }
 
     /* แสดง 1 รายการต่อแถวบนหน้าจอมือถือ */
@@ -266,10 +294,10 @@
                 </p>
             </div>
 
-            <!-- แสดง Role ของผู้ใช้ -->
-            <span class="organizer-role">
-                Organizer
-            </span>
+            <!-- ปุ่มเข้าสู่หน้า Organizer Profile -->
+            <a href="{% url 'organizer_profile' %}" class="user-button">
+                User
+            </a>
         </header>
 
         <!-- Section แสดงกิจกรรมที่ Organizer สร้าง -->
@@ -289,6 +317,7 @@
                     <span>+</span>
                     Add Event
                 </a>
+                
             </div>
             <!-- ตรวจสอบว่ามีกิจกรรมหรือไม่ -->
             {% if my_events %}
@@ -299,6 +328,14 @@
                     {% for event in my_events %}
 
                         <article class="organizer-event-item">
+
+                             {% if event.poster %}
+                                <img
+                                    src="{{ event.poster.url }}"
+                                    alt="โปสเตอร์กิจกรรม {{ event.title }}"
+                                    class="organizer-event-poster"
+                                >
+                            {% endif %}
 
                             <!-- ชื่อกิจกรรม -->
                             <h3>{{ event.title }}</h3>
