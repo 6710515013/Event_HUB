@@ -125,6 +125,15 @@
         min-width: 0;
     }
 
+    /* รูปแบบโปสเตอร์กิจกรรม */
+    .organizer-event-poster {
+        width: 100%;
+        max-height: 220px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 14px;
+    }
+
     /* แสดง 1 รายการต่อแถวบนหน้าจอมือถือ */
     @media (max-width: 768px) {
         .organizer-event-list {
@@ -300,6 +309,14 @@
                     {% for event in my_events %}
 
                         <article class="organizer-event-item">
+
+                             {% if event.poster %}
+                                <img
+                                    src="{{ event.poster.url }}"
+                                    alt="โปสเตอร์กิจกรรม {{ event.title }}"
+                                    class="organizer-event-poster"
+                                >
+                            {% endif %}
 
                             <!-- ชื่อกิจกรรม -->
                             <h3>{{ event.title }}</h3>
