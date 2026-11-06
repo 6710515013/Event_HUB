@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if event %}
+        Edit Event - EventHub
+    {% else %}
+        Create Event - EventHub
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+{% if event %}
+    <h2>Edit Event</h2>
+    <p>Update your event information.</p>
+{% else %}
+    <h2>Create New Event</h2>
+    <p>Fill in the information below to create an event.</p>
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">
+        {% if event %}
+            Update Event
+        {% else %}
+            Create Event
+        {% endif %}
+    </button>
+
+    <a href="{% url 'events:event_list' %}">
+        Cancel
+    </a>
+
+</form>
+
+{% endblock %}
