@@ -71,6 +71,25 @@
         flex-shrink: 0;      /* ป้องกันป้ายถูกบีบจนเล็กเกินไป */
     }
 
+    /* ปุ่ม User สำหรับเข้าหน้า Organizer Profile */
+    .user-button {
+        display: inline-block;
+        background: var(--dashboard-primary-light);
+        color: var(--dashboard-primary-dark);
+        padding: 9px 16px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        flex-shrink: 0;
+        transition: 0.2s ease;
+    }
+
+    .user-button:hover {
+        background: var(--dashboard-primary);
+        color: #FFFFFF;
+    }
+
     /* รูปแบบกล่อง Section แต่ละส่วนของ Dashboard */
     .organizer-section {
         background: var(--dashboard-card);
@@ -275,10 +294,10 @@
                 </p>
             </div>
 
-            <!-- แสดง Role ของผู้ใช้ -->
-            <span class="organizer-role">
-                Organizer
-            </span>
+            <!-- ปุ่มเข้าสู่หน้า Organizer Profile -->
+            <a href="{% url 'organizer_profile' %}" class="user-button">
+                User
+            </a>
         </header>
 
         <!-- Section แสดงกิจกรรมที่ Organizer สร้าง -->
