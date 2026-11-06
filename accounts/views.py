@@ -54,8 +54,10 @@ def user_login(request):
 
             if user.role == "STUDENT":
                 return redirect("dashboard:student_dashboard")
+            
             elif user.role == "ORGANIZER":
                 return redirect("dashboard:organizer_dashboard")
+            
             else:
                 return redirect("login_success")
 
