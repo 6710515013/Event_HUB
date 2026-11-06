@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User
-
+from django.contrib.auth.forms import PasswordChangeForm
 
 class RegistrationForm(UserCreationForm):
 
@@ -61,3 +61,37 @@ class RegistrationForm(UserCreationForm):
             )
 
         return cleaned_data
+
+class OrganizerAccountForm(forms.ModelForm):
+    """ฟอร์มแก้ไขข้อมูลบัญชี (แก้ได้เฉพาะ username)"""
+
+    class Meta:
+        model = User
+        # แก้ได้แค่ username: email / student_id / role ไม่อยู่ใน fields
+        # จึงแก้ผ่านฟอร์มนี้ไม่ได้ (ปลอดภัยฝั่ง server)
+        fields = ['username']
+        labels = {'username': 'ชื่อผู้ใช้'}
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+    # หมายเหตุ: username ซ้ำ Django ตรวจให้อัตโนมัติเพราะเป็น unique field
+
+
+class OrganizerPasswordChangeForm(PasswordChangeForm):
+    """ฟอร์มเปลี่ยนรหัสผ่าน (ต้องใส่รหัสเดิมก่อน) ใช้ของ Django ที่ตรวจความปลอดภัยให้"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # ใส่คลาส Bootstrap ให้ทุกช่องในฟอร์ม
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+
+
+class StudentAccountForm(OrganizerAccountForm):
+    """ฟอร์มแก้ข้อมูลบัญชี Student (พฤติกรรมเดียวกับ Organizer)"""
+    pass
+
+
+class StudentPasswordChangeForm(OrganizerPasswordChangeForm):
+    """ฟอร์มเปลี่ยนรหัสผ่าน Student (พฤติกรรมเดียวกับ Organizer)"""
+    pass
