@@ -317,6 +317,24 @@
         font-size: 12px;
     }
 
+    /* Register Button */
+    .register-btn {
+        display: inline-block;
+        margin-top: 16px;
+        padding: 10px 24px;
+        background: var(--dashboard-primary);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background 0.2s ease;
+    }
+
+    .register-btn:hover {
+        background: var(--dashboard-primary-dark);
+    }
+
     /* Empty State */
     .dashboard-empty {
         background: #F8FAFC;
@@ -333,17 +351,6 @@
         color: var(--dashboard-text);
         font-size: 15px;
         margin-bottom: 8px;
-    }
-
-    /* User Button */
-    .user-button {
-        display: inline-block;
-        padding: 10px 18px;
-        background: var(--dashboard-primary-light);
-        color: var(--dashboard-primary-dark);
-        border-radius: 10px;
-        text-decoration: none;
-        font-weight: 600;
     }
 
     /* Responsive */
@@ -389,9 +396,6 @@
                 <p>ค้นหาและเข้าร่วมกิจกรรมที่น่าสนใจ</p>
             </div>
 
-            <a href="{% url 'student_profile' %}" class="user-button">
-                User
-            </a>
         </header>
 
 
@@ -517,59 +521,57 @@
 
                     <div class="event-grid">
 
-                        {% for event in events %}
+                    {% for event in events %}
 
-                            <article class="dashboard-item">
+                        <article class="dashboard-item">
 
-                                {% if event.poster %}
-                                    <img
-                                        src="{{ event.poster.url }}"
-                                        alt="โปสเตอร์กิจกรรม {{ event.title }}"
-                                        class="dashboard-event-poster"
-                                    >
-                                {% endif %}
+                            {% if event.poster %}
+                                <img
+                                    src="{{ event.poster.url }}"
+                                    alt="โปสเตอร์กิจกรรม {{ event.title }}"
+                                    class="dashboard-event-poster"
+                                >
+                            {% endif %}
 
+                            <h3>{{ event.title }}</h3>
 
-                                <h3>{{ event.title }}</h3>
+                            <p>
+                                <strong>วันและเวลาจัด:</strong>
+                                {{ event.start_datetime|date:"d/m/Y H:i" }}
+                                -
+                                {{ event.end_datetime|date:"d/m/Y H:i" }}
+                            </p>
 
-                                <p>
-                                    <strong>วันและเวลาจัด:</strong>
-                                    {{ event.start_datetime|date:"d/m/Y H:i" }}
-                                    -
-                                    {{ event.end_datetime|date:"d/m/Y H:i" }}
-                                </p>
+                            <p>
+                                <strong>สถานที่:</strong>
+                                {{ event.location }}
+                            </p>
 
-                                <p>
-                                    <strong>สถานที่:</strong>
-                                    {{ event.location }}
-                                </p>
+                            <p>
+                                <strong>องค์กรผู้จัด:</strong>
+                                {{ event.organization_name }}
+                            </p>
 
-                                <p>
-                                    <strong>องค์กรผู้จัด:</strong>
-                                    {{ event.organization_name }}
-                                </p>
+                            <div class="event-categories">
+                                <strong>รูปแบบกิจกรรม:</strong>
 
-                                <div class="event-categories">
+                                {% for category in event.categories.all %}
+                                    <span class="event-category-badge">
+                                        {{ category.name }}
+                                    </span>
+                                {% empty %}
+                                    <span>ยังไม่ได้ระบุรูปแบบกิจกรรม</span>
+                                {% endfor %}
+                            </div>
 
-                                    <strong>รูปแบบกิจกรรม:</strong>
+                            <!-- ปุ่มสมัครเข้าร่วมกิจกรรม -->
+                            <a href="#" class="register-btn">
+                                Register / สมัคร
+                            </a>
 
-                                    {% for category in event.categories.all %}
+                        </article>
 
-                                        <span class="event-category-badge">
-                                            {{ category.name }}
-                                        </span>
-
-                                    {% empty %}
-
-                                        <span>ยังไม่ได้ระบุรูปแบบกิจกรรม</span>
-
-                                    {% endfor %}
-
-                                </div>
-
-                            </article>
-
-                        {% endfor %}
+                    {% endfor %}
 
                     </div>
 

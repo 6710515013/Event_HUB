@@ -71,25 +71,6 @@
         flex-shrink: 0;      /* ป้องกันป้ายถูกบีบจนเล็กเกินไป */
     }
 
-    /* ปุ่ม User สำหรับเข้าหน้า Organizer Profile */
-    .user-button {
-        display: inline-block;
-        background: var(--dashboard-primary-light);
-        color: var(--dashboard-primary-dark);
-        padding: 9px 16px;
-        border-radius: 10px;
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 600;
-        flex-shrink: 0;
-        transition: 0.2s ease;
-    }
-
-    .user-button:hover {
-        background: var(--dashboard-primary);
-        color: #FFFFFF;
-    }
-
     /* รูปแบบกล่อง Section แต่ละส่วนของ Dashboard */
     .organizer-section {
         background: var(--dashboard-card);
@@ -237,6 +218,46 @@
         margin-top: 14px;
     }
 
+    /* Event Action Buttons */
+    .event-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .event-edit-btn,
+    .event-delete-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 9px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+    .event-edit-btn {
+        background: var(--dashboard-primary-light);
+        color: var(--dashboard-primary-dark);
+    }
+
+    .event-edit-btn:hover {
+        background: var(--dashboard-primary);
+        color: white;
+    }
+
+    .event-delete-btn {
+        background: #FEE2E2;
+        color: #DC2626;
+    }
+
+    .event-delete-btn:hover {
+        background: #DC2626;
+        color: white;
+    }
+
     /* รูปแบบข้อความเมื่อไม่มีข้อมูลกิจกรรม */
     .organizer-empty {
         background: #F8FAFC;
@@ -294,10 +315,6 @@
                 </p>
             </div>
 
-            <!-- ปุ่มเข้าสู่หน้า Organizer Profile -->
-            <a href="{% url 'organizer_profile' %}" class="user-button">
-                User
-            </a>
         </header>
 
         <!-- Section แสดงกิจกรรมที่ Organizer สร้าง -->
@@ -383,6 +400,19 @@
                                 Registrations:
                                 {{ event.registration_count|default:"0" }}
                             </span>
+
+                            <!-- ปุ่มจัดการกิจกรรม -->
+                            <div class="event-actions">
+
+                                <a href="{% url 'events:event_edit' event.id %}" class="event-edit-btn">
+                                    Edit
+                                </a>
+
+                                <a href="{% url 'events:event_delete' event.id %}" class="event-delete-btn">
+                                    Delete
+                                </a>
+
+                            </div>
 
                         </article>
 
