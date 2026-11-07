@@ -13,20 +13,45 @@
 
 <style>
     .poster-upload-row {
-        display: grid;
-        grid-template-columns: auto auto 1fr;
-        align-items: center;
-        justify-content: start;
-        gap: 10px;
-    }
+    display: block;
+    margin-bottom: 16px;
+}
 
-    .poster-upload-row input[type="file"] {
-        width: auto;
-    }
+.poster-upload-row label {
+    display: block;
+    margin-bottom: 8px;
+}
 
-    .poster-upload-row small {
-        color: #666;
-    }
+.poster-clear-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.poster-upload-row .poster-clear-row label {
+    display: inline;
+    margin: 0;
+}
+
+.poster-clear-row input[type="checkbox"] {
+    margin: 0;
+}
+
+.poster-upload-row input[type="file"] {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    margin-top: 8px;
+}
+
+
+
+.poster-upload-row small {
+    display: block;
+    color: #666;
+    margin-top: 8px;
+}
 
     .realtime-error {
         color: #dc3545;
@@ -113,6 +138,33 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("event-form");
 
     const isEditing = form.dataset.isEditing === "true";
+        // จัดกลุ่ม Checkbox และ Clear ให้อยู่บรรทัดเดียวกัน
+    const posterRow = document.querySelector(".poster-upload-row");
+
+    if (posterRow) {
+        const clearCheckbox = posterRow.querySelector(
+            'input[name="poster-clear"]'
+        );
+
+        if (clearCheckbox) {
+            const clearLabel = posterRow.querySelector(
+                `label[for="${clearCheckbox.id}"]`
+        );
+
+        if (clearLabel) {
+            const clearContainer = document.createElement("div");
+
+            clearContainer.className = "poster-clear-row";
+
+            clearCheckbox.parentNode.insertBefore(
+                clearContainer,
+                clearCheckbox
+            );
+
+            clearContainer.append(clearCheckbox, clearLabel);
+        }
+    }
+}
 
     const fields = {
         organization_name: document.getElementById("id_organization_name"),
