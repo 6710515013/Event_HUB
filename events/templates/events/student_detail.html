@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Event Detail - EventHub{% endblock %}
+
+{% block content %}
+
+<h2>{{ event.title }}</h2>
+
+{% if event.poster %}
+    <img
+        src="{{ event.poster.url }}"
+        alt="Event Poster"
+        width="250"
+    >
+{% endif %}
+
+<p>ชมรม/องค์กร: {{ event.organization_name }}</p>
+
+<p>รายละเอียด: {{ event.description }}</p>
+
+<p>
+    วันเริ่มกิจกรรม:
+    {{ event.start_datetime|date:"d/m/Y H:i" }}
+</p>
+
+<p>
+    วันสิ้นสุดกิจกรรม:
+    {{ event.end_datetime|date:"d/m/Y H:i" }}
+</p>
+
+<p>
+    วันปิดรับสมัคร:
+    {{ event.registration_deadline|date:"d/m/Y H:i" }}
+</p>
+
+<p>สถานที่: {{ event.location }}</p>
+
+<p>จำนวนผู้เข้าร่วมสูงสุด: {{ event.max_participants }}</p>
+
+<p>สถานะ: {{ event.get_status_display }}</p>
+
+{% if can_register %}
+
+    <form method="post"
+          action="{% url 'registrations:apply' event.id %}">
+        {% csrf_token %}
+        <button type="submit">สมัครเข้าร่วมกิจกรรม</button>
+    </form>
+
+{% else %}
+
+    <p>กิจกรรมนี้ปิดรับสมัครแล้วหรือหมดเขตรับสมัครแล้ว</p>
+
+{% endif %}
+
+<a href="{% url 'events:browse_event_list' %}">
+    กลับไปหน้ารายการกิจกรรม
+</a>
+
+{% endblock %}

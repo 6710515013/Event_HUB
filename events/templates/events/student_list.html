@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Events - EventHub{% endblock %}
+
+{% block content %}
+
+<h2>กิจกรรมที่เปิดรับสมัคร</h2>
+
+<form method="get">
+    <input
+        type="text"
+        name="q"
+        placeholder="ค้นหาชื่อกิจกรรม"
+        value="{{ query }}"
+    >
+
+    <input
+        type="date"
+        name="date"
+        value="{{ selected_date }}"
+    >
+
+    <button type="submit">ค้นหา</button>
+
+    <a href="{% url 'events:browse_event_list' %}">
+        ล้างตัวกรอง
+    </a>
+</form>
+
+<hr>
+
+{% if events %}
+
+    {% for event in events %}
+
+        <div>
+            <h3>{{ event.title }}</h3>
+
+            <p>ชมรม/องค์กร: {{ event.organization_name }}</p>
+
+            <p>
+                วันเริ่มกิจกรรม:
+                {{ event.start_datetime|date:"d/m/Y H:i" }}
+            </p>
+
+            <p>สถานที่: {{ event.location }}</p>
+
+            <a href="{% url 'events:browse_event_detail' event.id %}">
+                ดูรายละเอียด
+            </a>
+        </div>
+
+        <hr>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>ไม่พบกิจกรรมที่เปิดรับสมัคร</p>
+
+{% endif %}
+
+{% endblock %}

@@ -1,60 +1,63 @@
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 
-# ============================================================
-# Student Event Browsing
-# Person 3: Search and Filter Events
-# ============================================================
-
-# Import Event Model จาก Person 2
-# ห้ามสร้าง Event Model ซ้ำ
 from events.models import Event
 
 
 def get_filtered_events(request):
-    """
-    ค้นหาและกรองกิจกรรมสำหรับ Student Dashboard
+    """ค้นหาและกรองกิจกรรมสำหรับ Student"""
 
-    Parameters:
-        request: HTTP request จาก Dashboard
-
-    Returns:
-        QuerySet ของ Event ที่ผ่านการค้นหาและกรองแล้ว
-    """
-
-    # --------------------------------------------------------
-    # 1. รับค่าจากช่องค้นหาชื่อกิจกรรม
-    #    name="q" ใน HTML Dashboard
-    # --------------------------------------------------------
     query = request.GET.get("q", "").strip()
-
-    # --------------------------------------------------------
-    # 2. รับค่าจากช่องเลือกวันที่
-    #    name="date" ใน HTML Dashboard
-    # --------------------------------------------------------
     date = request.GET.get("date", "").strip()
 
-    # --------------------------------------------------------
-    # 3. ดึงข้อมูลกิจกรรมจาก Event Model ของ Person 2
-    #    เริ่มต้นจากกิจกรรมทั้งหมด
-    # --------------------------------------------------------
-    events = Event.objects.all()
+    # แสดงเฉพาะกิจกรรมที่เปิดรับสมัคร
+    events = Event.objects.filter(status=Event.Status.OPEN)
 
-    # --------------------------------------------------------
-    # 4. Search: ค้นหาจากชื่อกิจกรรม
-    #    title__icontains = ค้นหาคำที่อยู่ในชื่อกิจกรรม
-    #    ไม่จำเป็นต้องพิมพ์ชื่อเต็ม
-    # --------------------------------------------------------
+    # ค้นหาจากชื่อกิจกรรม
     if query:
         events = events.filter(title__icontains=query)
 
-    # --------------------------------------------------------
-    # 5. Filter: กรองตามวันที่เริ่มกิจกรรม
-    #    start_datetime__date = วันที่เริ่มกิจกรรม
-    # --------------------------------------------------------
+    # กรองตามวันที่เริ่มกิจกรรม
     if date:
         events = events.filter(start_datetime__date=date)
 
-    # --------------------------------------------------------
-    # 6. ส่งกิจกรรมที่ผ่านการกรองกลับไปให้ Dashboard
-    #    Dashboard จะนำไปแสดงผลในหน้าเดิม
-    # --------------------------------------------------------
     return events
+
+
+@login_required
+def event_list(request):
+    """แสดงรายการกิจกรรมสำหรับ Student"""
+
+    events = get_filtered_events(request)
+
+    return render(
+        request,
+        "events/student_list.html",
+        {
+            "events": events,
+            "query": request.GET.get("q", "").strip(),
+            "selected_date": request.GET.get("date", "").strip(),
+        },
+    )
+
+
+@login_required
+def event_detail(request, event_id):
+    """แสดงรายละเอียดกิจกรรม"""
+
+    event = get_object_or_404(Event, pk=event_id)
+
+    can_register = (
+        event.status == Event.Status.OPEN
+        and timezone.now() <= event.registration_deadline
+    )
+
+    return render(
+        request,
+        "events/student_detail.html",
+        {
+            "event": event,
+            "can_register": can_register,
+        },
+    )
