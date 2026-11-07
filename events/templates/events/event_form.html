@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block title %}
@@ -10,25 +11,88 @@
 
 {% block content %}
 
+<style>
+    .poster-upload-row {
+        display: grid;
+        grid-template-columns: auto auto 1fr;
+        align-items: center;
+        justify-content: start;
+        gap: 10px;
+    }
+
+    .poster-upload-row input[type="file"] {
+        width: auto;
+    }
+
+    .poster-upload-row small {
+        color: #666;
+    }
+
+    .realtime-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .realtime-invalid {
+        border-color: #dc3545 !important;
+    }
+
+    .field-container {
+        margin-bottom: 16px;
+    }
+</style>
+
 {% if event %}
     <h2>Edit Event</h2>
     <p>Update your event information.</p>
-    
+
     {% if event.poster %}
         <p>Current Poster:</p>
         <img src="{{ event.poster.url }}"
              alt="{{ event.title }}"
              style="max-width: 300px; height: auto;">
     {% endif %}
-
 {% else %}
     <h2>Create New Event</h2>
     <p>กรอกข้อมูลด้านล่างเพื่อสร้างกิจกรรม</p>
 {% endif %}
 
-<form method="POST" enctype="multipart/form-data">
+<form method="POST"
+      enctype="multipart/form-data"
+      id="event-form"
+      data-is-editing="{% if event %}true{% else %}false{% endif %}"
+      novalidate>
     {% csrf_token %}
-    {{ form.as_p }}
+
+    {{ form.non_field_errors }}
+
+    {% for field in form %}
+        <div class="field-container">
+
+            {% if field.name == "poster" %}
+                <div class="poster-upload-row">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    <small>(ขนาดไฟล์ไม่เกิน 5 MB)</small>
+                </div>
+            {% else %}
+                {{ field.as_field_group }}
+            {% endif %}
+
+            {% if field.errors %}
+                {{ field.errors }}
+            {% endif %}
+
+            <span
+                id="realtime-error-{{ field.name }}"
+                class="realtime-error"
+                aria-live="polite">
+            </span>
+
+        </div>
+    {% endfor %}
 
     <button type="submit">
         {% if event %}
@@ -41,7 +105,244 @@
     <a href="{% url 'events:event_list' %}">
         Cancel
     </a>
-
 </form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const form = document.getElementById("event-form");
+
+    const isEditing = form.dataset.isEditing === "true";
+
+    const fields = {
+        organization_name: document.getElementById("id_organization_name"),
+        title: document.getElementById("id_title"),
+        description: document.getElementById("id_description"),
+        poster: document.getElementById("id_poster"),
+        start: document.getElementById("id_start_datetime"),
+        end: document.getElementById("id_end_datetime"),
+        deadline: document.getElementById("id_registration_deadline"),
+        location: document.getElementById("id_location"),
+        participants: document.getElementById("id_max_participants"),
+        url: document.getElementById("id_google_form_url")
+    };
+
+    const errors = {
+        organization_name: document.getElementById("realtime-error-organization_name"),
+        title: document.getElementById("realtime-error-title"),
+        description: document.getElementById("realtime-error-description"),
+        poster: document.getElementById("realtime-error-poster"),
+        start: document.getElementById("realtime-error-start_datetime"),
+        end: document.getElementById("realtime-error-end_datetime"),
+        deadline: document.getElementById("realtime-error-registration_deadline"),
+        location: document.getElementById("realtime-error-location"),
+        participants: document.getElementById("realtime-error-max_participants"),
+        url: document.getElementById("realtime-error-google_form_url")
+    };
+
+    function showError(field, errorElement, message) {
+        if (!field || !errorElement) return;
+
+        errorElement.textContent = message;
+        field.classList.toggle("realtime-invalid", Boolean(message));
+        field.setAttribute("aria-invalid", message ? "true" : "false");
+    }
+
+    function clearError(field, errorElement) {
+        showError(field, errorElement, "");
+    }
+
+    function validateRequired(field, errorElement, label) {
+        if (!field) return true;
+
+        if (!field.value.trim()) {
+            showError(field, errorElement, "กรุณากรอก" + label);
+            return false;
+        }
+
+        clearError(field, errorElement);
+        return true;
+    }
+
+    function getDate(field) {
+        if (!field || !field.value) return null;
+
+        const date = new Date(field.value);
+
+        return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function validateStart() {
+        if (!fields.start.value) {
+            showError(fields.start, errors.start, "กรุณาเลือกวันและเวลาเริ่มกิจกรรม");
+            return false;
+        }
+
+        clearError(fields.start, errors.start);
+        return true;
+    }
+
+    function validateEnd() {
+        const start = getDate(fields.start);
+        const end = getDate(fields.end);
+
+        if (!end) {
+            showError(fields.end, errors.end, "กรุณาเลือกวันและเวลาสิ้นสุดกิจกรรม");
+            return false;
+        }
+
+        if (start && end <= start) {
+            showError(fields.end, errors.end, "วันและเวลาสิ้นสุดต้องอยู่หลังวันเริ่มกิจกรรม");
+            return false;
+        }
+
+        clearError(fields.end, errors.end);
+        return true;
+    }
+
+    function validateDeadline() {
+        const deadline = getDate(fields.deadline);
+        const start = getDate(fields.start);
+
+        if (!deadline) {
+            showError(fields.deadline, errors.deadline, "กรุณาเลือกวันและเวลาปิดรับสมัคร");
+            return false;
+        }
+
+        if (start && start.getTime() - deadline.getTime() < 24 * 60 * 60 * 1000) {
+            showError(fields.deadline, errors.deadline,
+                "ต้องปิดรับสมัครก่อนวันเริ่มกิจกรรมอย่างน้อย 24 ชั่วโมง");
+            return false;
+        }
+
+        if (!isEditing) {
+            const minimumDeadline = Date.now() + 24 * 60 * 60 * 1000;
+
+            if (deadline.getTime() < minimumDeadline) {
+                showError(fields.deadline, errors.deadline,
+                    "ต้องสร้างกิจกรรมล่วงหน้าก่อนวันปิดรับสมัครอย่างน้อย 24 ชั่วโมง");
+                return false;
+            }
+        }
+
+        clearError(fields.deadline, errors.deadline);
+        return true;
+    }
+
+    function validateParticipants() {
+        const value = fields.participants.value;
+
+        if (!value || Number(value) < 1 || !Number.isInteger(Number(value))) {
+            showError(fields.participants, errors.participants,
+                "จำนวนผู้เข้าร่วมต้องเป็นจำนวนเต็มตั้งแต่ 1 คนขึ้นไป");
+            return false;
+        }
+
+        clearError(fields.participants, errors.participants);
+        return true;
+    }
+
+    function validatePoster() {
+        const file = fields.poster.files[0];
+
+        if (file && file.size > 5 * 1024 * 1024) {
+            showError(fields.poster, errors.poster,
+                "ขนาดไฟล์โปสเตอร์ต้องไม่เกิน 5 MB");
+            return false;
+        }
+
+        clearError(fields.poster, errors.poster);
+        return true;
+    }
+
+    function validateURL() {
+        const value = fields.url.value.trim();
+
+        if (!value) {
+            showError(fields.url, errors.url, "กรุณากรอกลิงก์ Google Forms");
+            return false;
+        }
+
+        try {
+            const url = new URL(value);
+
+            if (!["http:", "https:"].includes(url.protocol) || !url.hostname.includes(".")) {
+                throw new Error("Invalid URL");
+            }
+        } catch {
+            showError(fields.url, errors.url, "กรุณากรอก URL ที่ถูกต้อง");
+            return false;
+        }
+
+        clearError(fields.url, errors.url);
+        return true;
+    }
+
+    function validateAll() {
+        const results = [];
+
+        results.push(validateRequired(fields.organization_name, errors.organization_name, "ชื่อชมรม / หน่วยงาน"));
+        results.push(validateRequired(fields.title, errors.title, "ชื่อกิจกรรม"));
+        results.push(validateRequired(fields.description, errors.description, "รายละเอียดกิจกรรม"));
+        results.push(validateRequired(fields.location, errors.location, "สถานที่จัดกิจกรรม"));
+
+        results.push(validateStart());
+        results.push(validateEnd());
+        results.push(validateDeadline());
+        results.push(validateParticipants());
+        results.push(validatePoster());
+        results.push(validateURL());
+
+        return results.every(Boolean);
+    }
+
+    // ตรวจสอบข้อความทั่วไปขณะพิมพ์
+    [
+        [fields.organization_name, errors.organization_name, "ชื่อชมรม / หน่วยงาน"],
+        [fields.title, errors.title, "ชื่อกิจกรรม"],
+        [fields.description, errors.description, "รายละเอียดกิจกรรม"],
+        [fields.location, errors.location, "สถานที่จัดกิจกรรม"]
+    ].forEach(([field, errorElement, label]) => {
+        field.addEventListener("input", () => {
+            validateRequired(field, errorElement, label);
+        });
+    });
+
+    // ตรวจสอบวันและเวลา
+    fields.start.addEventListener("change", () => {
+        validateStart();
+        validateEnd();
+        validateDeadline();
+    });
+
+    fields.end.addEventListener("change", validateEnd);
+
+    fields.deadline.addEventListener("change", validateDeadline);
+
+    // ตรวจสอบจำนวนผู้เข้าร่วม
+    fields.participants.addEventListener("input", validateParticipants);
+
+    // ตรวจสอบโปสเตอร์
+    fields.poster.addEventListener("change", validatePoster);
+
+    // ตรวจสอบ URL
+    fields.url.addEventListener("input", validateURL);
+    fields.url.addEventListener("change", validateURL);
+
+    // ตรวจสอบอีกครั้งก่อนส่งฟอร์ม
+    form.addEventListener("submit", function (event) {
+        if (!validateAll()) {
+            event.preventDefault();
+
+            const firstInvalid = form.querySelector(".realtime-invalid");
+
+            if (firstInvalid) {
+                firstInvalid.focus();
+            }
+        }
+    });
+
+});
+</script>
 
 {% endblock %}
