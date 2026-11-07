@@ -7,29 +7,29 @@
     <h2>ประวัติการกดสมัครกิจกรรม</h2>
     <p>รายการกิจกรรมที่คุณเคยกดสมัครเข้าร่วม</p>
 
-    {# มีข้อมูล: แสดงเป็นตาราง #}
     {% if registrations %}
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>ชื่อกิจกรรม</th>
+                <th>วันที่กดสมัคร</th>
                 <th>เวลาที่กดสมัคร</th>
             </tr>
         </thead>
         <tbody>
-            {# วนทีละรายการสมัคร #}
             {% for r in registrations %}
             <tr>
-                {# ชื่อกิจกรรม (field title ใน Event) #}
-                <td>{{ r.event.title }}</td>
-                {# วันเวลาที่นักศึกษากดสมัคร (field registered_at ใน Registration) #}
-                <td>{{ r.registered_at|date:"d/m/Y H:i" }}</td>
+                {# ชื่อกิจกรรม: r.event ใช้ __str__ ของ Event (คืนค่า title) #}
+                <td>{{ r.event }}</td>
+                {# วันที่กดสมัคร (จาก Registration.registered_at) #}
+                <td>{{ r.registered_at|date:"d/m/Y" }}</td>
+                {# เวลาที่กดสมัคร #}
+                <td>{{ r.registered_at|time:"H:i" }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     {% else %}
-    {# ไม่มีข้อมูลจริงๆ ค่อยแสดงข้อความนี้ #}
     <div class="empty-state">
         <p>ยังไม่มีประวัติการกดสมัครกิจกรรม</p>
     </div>
