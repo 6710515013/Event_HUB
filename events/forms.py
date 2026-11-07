@@ -23,6 +23,21 @@ class EventForm(forms.ModelForm):
             "google_form_url",
         ]
 
+        labels = {
+            "organization_name": "ชื่อชมรม / หน่วยงาน",
+            "poster": "โปสเตอร์กิจกรรม",
+            "title": "ชื่อกิจกรรม",
+            "description": "รายละเอียดกิจกรรม",
+            "categories": "หมวดหมู่กิจกรรม",
+            "start_datetime": "วันและเวลาเริ่มกิจกรรม",
+            "end_datetime": "วันและเวลาสิ้นสุดกิจกรรม",
+            "registration_deadline": "วันและเวลาปิดรับสมัคร",
+            "location": "สถานที่จัดกิจกรรม",
+            "max_participants": "จำนวนผู้เข้าร่วมสูงสุด",
+            "status": "สถานะกิจกรรม",
+            "google_form_url": "ลิงก์ Google Forms สำหรับลงทะเบียน",
+        }
+
         widgets = {
             "organization_name": forms.TextInput(
                 attrs={"class": "form-control"}
