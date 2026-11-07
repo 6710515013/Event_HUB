@@ -1,0 +1,160 @@
+/* ---------- 1. ตัวแปรสีและฟอนต์ของ EventHub ---------- */
+:root {
+    /* สีหลัก (ปุ่มหลัก ลิงก์) */
+    --eh-primary: #C2410C;
+    --eh-primary-hover: #9A3412;
+    --eh-primary-soft: #FFEDD5;     /* พื้นอ่อน เช่น ป้าย หรือพื้นหลังไอคอน */
+
+    --eh-brand-orange: #FB923C;
+    --eh-navbar-bg: #1F2937;
+
+    /* สีพื้นฐาน */
+    --eh-text: #1F2937;
+    --eh-text-muted: #6B7280;
+    --eh-border: #E5E7EB;
+    --eh-bg: #F7F7F8;
+    --eh-card: #FFFFFF;
+
+    /* สีบอกสถานะ */
+    --eh-open: #15803D;        --eh-open-bg: #DCFCE7;     /* เปิดรับสมัคร / สำเร็จ */
+    --eh-almost: #A16207;      --eh-almost-bg: #FEF9C3;   /* ใกล้เต็ม */
+    --eh-closed: #6B7280;      --eh-closed-bg: #F3F4F6;   /* ปิดรับสมัคร / ยกเลิก */
+    --eh-danger: #DC2626;                                 /* ลบ / ผิดพลาด */
+
+    --eh-font: "Google Sans", "Noto Sans Thai", "Leelawadee UI", Tahoma, sans-serif;
+    --eh-radius: 10px;
+
+    /* ส่งค่าให้ Bootstrap ใช้ตาม (ลิงก์ ฟอนต์ สีตัวอักษร ขอบ) */
+    --bs-primary: var(--eh-primary);
+    --bs-primary-rgb: 194, 65, 12;
+    --bs-link-color: var(--eh-primary);
+    --bs-link-color-rgb: 194, 65, 12;
+    --bs-link-hover-color: var(--eh-primary-hover);
+    --bs-link-hover-color-rgb: 154, 52, 18;
+    --bs-body-font-family: var(--eh-font);
+    --bs-body-color: var(--eh-text);
+    --bs-border-color: var(--eh-border);
+    --bs-secondary-color: var(--eh-text-muted);
+}
+
+
+/* ---------- 2. พื้นฐานของหน้า ---------- */
+body {
+    font-family: var(--eh-font);
+    background-color: var(--eh-bg);
+    color: var(--eh-text);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: var(--eh-text);
+}
+
+
+/* ---------- 3. ปุ่ม: เปลี่ยนสีปุ่มของ Bootstrap ให้เป็นสีของ EventHub ---------- */
+.btn {
+    font-weight: 500;
+    border-radius: 8px;
+}
+
+.btn-primary {
+    --bs-btn-bg: var(--eh-primary);
+    --bs-btn-border-color: var(--eh-primary);
+    --bs-btn-hover-bg: var(--eh-primary-hover);
+    --bs-btn-hover-border-color: var(--eh-primary-hover);
+    --bs-btn-active-bg: var(--eh-primary-hover);
+    --bs-btn-active-border-color: var(--eh-primary-hover);
+    --bs-btn-disabled-bg: var(--eh-primary);
+    --bs-btn-disabled-border-color: var(--eh-primary);
+    --bs-btn-focus-shadow-rgb: 194, 65, 12;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--eh-primary);
+    --bs-btn-border-color: var(--eh-primary);
+    --bs-btn-hover-bg: var(--eh-primary);
+    --bs-btn-hover-border-color: var(--eh-primary);
+    --bs-btn-active-bg: var(--eh-primary-hover);
+    --bs-btn-active-border-color: var(--eh-primary-hover);
+    --bs-btn-focus-shadow-rgb: 194, 65, 12;
+}
+
+
+/* ---------- 4. ฟอร์ม: ขอบตอนคลิกเป็นสีส้ม แทนสีฟ้าของ Bootstrap ---------- */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--eh-brand-orange);
+    box-shadow: 0 0 0 0.2rem rgba(194, 65, 12, 0.15);
+}
+
+.form-check-input:checked {
+    background-color: var(--eh-primary);
+    border-color: var(--eh-primary);
+}
+
+
+/* ---------- 5. การ์ด ---------- */
+.card {
+    border-color: var(--eh-border);
+    border-radius: var(--eh-radius);
+}
+
+
+/* ---------- 6. Navbar ---------- */
+.eh-navbar {
+    --bs-dark-rgb: 31, 41, 55;      /* ทำให้ bg-dark เป็นสี #1F2937 */
+    padding-block: 0.6rem;
+}
+
+.eh-logo {
+    font-weight: 700;
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+}
+
+.eh-logo-event {
+    color: #FFFFFF;
+}
+
+.eh-logo-hub {
+    color: var(--eh-brand-orange);
+}
+
+/* เมนูที่เลือกอยู่: ตัวหนา + เส้นใต้สีส้ม */
+.eh-navbar .nav-link.active {
+    font-weight: 500;
+    box-shadow: inset 0 -2px 0 var(--eh-brand-orange);
+}
+
+/* ป้ายบอก Role ข้างชื่อผู้ใช้ */
+.eh-role-badge {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #FED7AA;
+    font-weight: 500;
+}
+
+
+/* ---------- 7. Footer ---------- */
+.eh-footer {
+    background-color: var(--eh-card);
+    border-top: 1px solid var(--eh-border);
+    color: var(--eh-text-muted);
+}
+
+
+/* ---------- 8. ป้ายสถานะกิจกรรม (ให้ทุกคนใช้ร่วมกัน) ----------
+   ตัวอย่าง: <span class="badge eh-status-open">เปิดรับสมัคร</span>          */
+.eh-status-open {
+    background-color: var(--eh-open-bg);
+    color: var(--eh-open);
+}
+
+.eh-status-almost {
+    background-color: var(--eh-almost-bg);
+    color: var(--eh-almost);
+}
+
+.eh-status-closed {
+    background-color: var(--eh-closed-bg);
+    color: var(--eh-closed);
+}
