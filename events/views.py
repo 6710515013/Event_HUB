@@ -24,7 +24,7 @@ def event_create(request):
             event.save()
             form.save_m2m()
 
-            return redirect("events:event_list")
+            return redirect("dashboard:organizer_dashboard")
 
     else:
         form = EventForm()
