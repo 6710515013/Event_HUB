@@ -29,11 +29,11 @@
       </ul>
 
       <div class="card-body">
-        {# ปุ่มดูประวัติการสมัคร: ไปหน้าของเพื่อน (ถ้าหา URL ไม่เจอจะเป็นปุ่มเทากดไม่ได้) #}
+        {# ปุ่มดูประวัติการสมัคร#}
         {% if history_url %}
-          <a href="{{ history_url }}" class="btn btn-primary w-100 mb-2">ดูประวัติการสมัคร</a>
+          <a href="{{ history_url }}" class="btn btn-primary w-100 mb-2">ดูประวัติการกดสมัคร</a>
         {% else %}
-          <button type="button" class="btn btn-secondary w-100 mb-2" disabled>ดูประวัติการสมัคร (ยังไม่เชื่อมหน้า)</button>
+          <button type="button" class="btn btn-secondary w-100 mb-2" disabled>ดูประวัติการกดสมัคร</button>
         {% endif %}
 
         <div class="d-flex gap-2">
@@ -46,9 +46,8 @@
         </div>
       </div>
     </div>
-
     {# ปุ่มกลับ Dashboard ของ Student (ชื่อ URL student_dashboard มีอยู่ในระบบของทีมแล้ว) #}
-    <a href="{% url 'student_dashboard' %}" class="d-block text-center mt-3">← กลับหน้า Dashboard</a>
+    <a href="{% url 'dashboard:student_dashboard'%} " class="d-block text-center mt-3">← กิจกรรมที่เปิดรับสมัคร</a>
   </div>
 </div>
 {# แสดงข้อความแจ้งเตือน (ลบบล็อกนี้ ถ้า base.html ของทีมแสดง messages อยู่แล้ว) #}

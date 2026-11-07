@@ -35,9 +35,11 @@
         </form>
       </div>
     </div>
+    {# ปุ่มกลับไปหน้า Dashboard ของ Organizer (หน้าของเพื่อนในทีม) #}
+    <a href="{% url 'dashboard:organizer_dashboard' %}" class="d-block text-center mt-3">← กิจกรรมที่คุณสร้าง</a>
   </div>
 </div>
-{# แสดงข้อความแจ้งเตือน เช่น "บันทึกข้อมูลเรียบร้อยแล้ว" (ลบบล็อกนี้ ถ้า base.html ของทีมแสดง messages อยู่แล้ว) #}
+{# แสดงข้อความแจ้งเตือน เช่น "บันทึกข้อมูลเรียบร้อยแล้ว" #}
 {% for m in messages %}
   <div class="alert alert-success">{{ m }}</div>
 {% endfor %}
