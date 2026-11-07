@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from datetime import timedelta
 
 class Category(models.Model):
 
@@ -87,11 +88,11 @@ class Event(models.Model):
         if (
             self.registration_deadline
             and self.start_datetime
-            and self.registration_deadline > self.start_datetime
+            and self.start_datetime < self.registration_deadline + timedelta(hours=24)
         ):
             raise ValidationError({
                 "registration_deadline":
-                    "Registration deadline must not be later than event start time."
+                    "Registration deadline must be at least 24 hours before event start."
             })
 
     def __str__(self):
