@@ -46,12 +46,12 @@
         </div>
       </div>
     </div>
+    {# ปุ่มกลับ Dashboard ของ Student (ชื่อ URL student_dashboard มีอยู่ในระบบของทีมแล้ว) #}
+    <a href="{% url 'dashboard:student_dashboard'%} " class="d-block text-center mt-3">← กิจกรรมที่เปิดรับสมัคร</a>
   </div>
 </div>
 {# แสดงข้อความแจ้งเตือน (ลบบล็อกนี้ ถ้า base.html ของทีมแสดง messages อยู่แล้ว) #}
 {% for m in messages %}
   <div class="alert alert-success">{{ m }}</div>
 {% endfor %}
-{# ปุ่มกลับ Dashboard ของ Student (ชื่อ URL student_dashboard มีอยู่ในระบบของทีมแล้ว) #}
-    <a href="{% url 'dashboard:student_dashboard'%} " class="d-block text-center mt-3">← กิจกรรมที่เปิดรับสมัคร</a>
 {% endblock %}
