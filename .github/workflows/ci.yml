@@ -1,0 +1,37 @@
+# รัน test อัตโนมัติทุกครั้งที่ push หรือเปิด PR เข้า dev / main
+name: CI
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ดึงโค้ด
+        uses: actions/checkout@v4
+
+      - name: ติดตั้ง Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: ติดตั้ง package
+        run: |
+          pip install -r requirements.txt
+          pip install coverage
+
+      - name: ตรวจโปรเจกต์และ migration
+        run: |
+          python manage.py check
+          python manage.py makemigrations --check --dry-run
+
+      - name: รัน test และวัด coverage (ต้องได้อย่างน้อย 80%)
+        run: |
+          coverage run manage.py test
+          coverage report --fail-under=80

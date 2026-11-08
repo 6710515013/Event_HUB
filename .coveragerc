@@ -1,0 +1,11 @@
+# ตั้งค่าการวัด coverage: ไม่นับ migration, ไฟล์ test และไฟล์ที่ Django สร้างให้
+[run]
+source = .
+omit =
+    */migrations/*
+    */tests.py
+    manage.py
+    event_hub/asgi.py
+    event_hub/wsgi.py
+    venv/*
+    .venv/*
