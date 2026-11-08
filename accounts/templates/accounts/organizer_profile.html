@@ -1,46 +1,86 @@
-{# หน้าแสดงข้อมูลโปรไฟล์ Organizer #}
+{# หน้าแสดงข้อมูลโปรไฟล์ (หน้าตาอยู่ใน static/css/style.css หัวข้อ 21) #}
 {% extends 'base.html' %}
+
+{% block title %}โปรไฟล์ | EventHub{% endblock %}
+
 {% block content %}
+<div class="eh-profile-page">
+<div class="eh-profile">
 
-<div class="row justify-content-center">
-  <div class="col-md-6">
-    <div class="card">
-      <div class="card-body text-center">
-        {# วงกลมแสดงตัวอักษรแรกของ username #}
-        <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center mb-3"
-             style="width:100px;height:100px;font-size:2.5rem;">
-          {{ profile_user.username|first|upper }}
+    {# ---------- ส่วนหัว: รูปตัวอักษรย่อ ชื่อ และปุ่มจัดการ ---------- #}
+    <section class="eh-profile-head">
+        <div class="eh-profile-cover" aria-hidden="true"></div>
+        <div class="eh-profile-main">
+            <div class="eh-profile-id">
+                <div class="eh-avatar" aria-hidden="true">
+                    {% if profile_user.first_name %}{{ profile_user.first_name|first|upper }}{% else %}{{ profile_user.username|first|upper }}{% endif %}
+                </div>
+                <div class="eh-profile-name">
+                    <h1>{{ profile_user.get_full_name|default:profile_user.username }}</h1>
+                    <p>@{{ profile_user.username }} <span class="badge">{{ profile_user.get_role_display }}</span></p>
+                </div>
+            </div>
+            <div class="eh-profile-actions">
+                <a href="{% url 'organizer_profile_edit' %}" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> แก้ไขโปรไฟล์
+                </a>
+            </div>
         </div>
-        <h4 class="mb-1">{{ profile_user.username }}</h4>
-        <span class="badge bg-primary">{{ profile_user.get_role_display }}</span>
-      </div>
+    </section>
 
-      {# ข้อมูลโปรไฟล์ทั้งหมด #}
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item"><strong>ชื่อผู้ใช้:</strong> {{ profile_user.username }}</li>
-        <li class="list-group-item"><strong>ชื่อ:</strong> {{ profile_user.first_name|default:"ยังไม่ระบุ" }}</li>
-        <li class="list-group-item"><strong>นามสกุล:</strong> {{ profile_user.last_name|default:"ยังไม่ระบุ" }}</li>
-        <li class="list-group-item"><strong>รหัสนักศึกษา:</strong> {{ profile_user.student_id|default:"-" }}</li>
-        <li class="list-group-item"><strong>อีเมล:</strong> {{ profile_user.email|default:"ยังไม่ระบุ" }}</li>
-        <li class="list-group-item"><strong>บทบาท:</strong> {{ profile_user.get_role_display }}</li>
-      </ul>
-
-      {# ปุ่มล่างสุด: ไปหน้าแก้ไข + ออกจากระบบ #}
-      <div class="card-body d-flex gap-2">
-        <a href="{% url 'organizer_profile_edit' %}" class="btn btn-warning flex-fill">แก้ไขข้อมูลส่วนตัว</a>
-        {# Logout ส่งแบบ POST พร้อม csrf_token เพื่อความปลอดภัย #}
-        <form method="post" action="{% url 'logout' %}" class="flex-fill">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-danger w-100">ออกจากระบบ</button>
-        </form>
-      </div>
+    {# ---------- ตัวเลขสรุปและทางลัด ---------- #}
+    <div class="eh-stats">
+        <a class="eh-stat" href="{% url 'events:event_list' %}">
+            <span class="icon"><i class="bi bi-megaphone"></i></span>
+            <div>
+                <strong>{{ profile_user.created_events.count }}</strong>
+                <span>กิจกรรมที่สร้าง</span>
+            </div>
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        </a>
+        <a class="eh-stat" href="{% url 'events:event_create' %}">
+            <span class="icon"><i class="bi bi-plus-lg"></i></span>
+            <div>
+                <strong>สร้างกิจกรรม</strong>
+                <span>ประกาศกิจกรรมใหม่ของชุมนุม</span>
+            </div>
+            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        </a>
     </div>
-    {# ปุ่มกลับไปหน้า Dashboard ของ Organizer (หน้าของเพื่อนในทีม) #}
-    <a href="{% url 'dashboard:organizer_dashboard' %}" class="d-block text-center mt-3">← กิจกรรมที่คุณสร้าง</a>
-  </div>
+
+    {# ---------- ข้อมูลบัญชี ---------- #}
+    <section class="eh-info" aria-labelledby="info-title">
+        <h2 id="info-title">ข้อมูลบัญชี</h2>
+        <dl>
+            <div>
+                <i class="bi bi-person"></i>
+                <dt>ชื่อ - นามสกุล</dt>
+                <dd class="{% if not profile_user.get_full_name %}is-empty{% endif %}">{{ profile_user.get_full_name|default:"ยังไม่ระบุ" }}</dd>
+            </div>
+            <div>
+                <i class="bi bi-at"></i>
+                <dt>ชื่อผู้ใช้</dt>
+                <dd>{{ profile_user.username }}</dd>
+            </div>
+            <div>
+                <i class="bi bi-envelope"></i>
+                <dt>อีเมล</dt>
+                <dd class="{% if not profile_user.email %}is-empty{% endif %}">{{ profile_user.email|default:"ยังไม่ระบุ" }}</dd>
+            </div>
+            <div>
+                <i class="bi bi-calendar-check"></i>
+                <dt>เป็นสมาชิกตั้งแต่</dt>
+                <dd>{{ profile_user.date_joined|date:"d/m/Y" }}</dd>
+            </div>
+        </dl>
+
+        <div class="eh-info-foot">
+            <a href="{% url 'organizer_password_change' %}?from=profile" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-key"></i> เปลี่ยนรหัสผ่าน
+            </a>
+        </div>
+    </section>
+
 </div>
-{# แสดงข้อความแจ้งเตือน เช่น "บันทึกข้อมูลเรียบร้อยแล้ว" #}
-{% for m in messages %}
-  <div class="alert alert-success">{{ m }}</div>
-{% endfor %}
+</div>
 {% endblock %}
