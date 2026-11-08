@@ -1,23 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Event Hub - Login</title>
-</head>
-<body>
-    <h1>Event Hub</h1>
-    <h2>Login</h2>
+{% extends "base.html" %}
 
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
+{% block title %}เข้าสู่ระบบ | EventHub{% endblock %}
 
-        <button type="submit">Login</button>
-    </form>
+{% block content %}
+{# หน้าตาทั้งหมดอยู่ใน static/css/style.css หัวข้อ 15 และ 20 #}
+<div class="eh-auth-page">
+    <section class="eh-auth" aria-labelledby="login-title">
 
-    <p>
-        Don't have an account?
-        <a href="{% url 'register' %}">Register</a>
-    </p>
-</body>
-</html>
+        <header class="eh-auth-head">
+            <span class="eh-logo-mark" aria-hidden="true"><i class="bi bi-calendar2-event"></i></span>
+            <h1 id="login-title">เข้าสู่ระบบ</h1>
+            <p>เข้าสู่ระบบเพื่อค้นหาและจัดการกิจกรรมของคุณ</p>
+        </header>
+
+        <form method="post" class="eh-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="eh-auth-error" role="alert">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span>ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง ลองพิมพ์ใหม่อีกครั้ง</span>
+                </div>
+            {% endif %}
+
+            <div class="eh-field">
+                <label for="{{ form.username.id_for_label }}">ชื่อผู้ใช้</label>
+                {{ form.username }}
+            </div>
+
+            <div class="eh-field">
+                <label for="{{ form.password.id_for_label }}">รหัสผ่าน</label>
+                <div class="eh-password">
+                    {{ form.password }}
+                    <button type="button" class="eh-eye" aria-label="แสดงรหัสผ่าน"
+                            data-target="{{ form.password.id_for_label }}">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <small class="eh-caps" hidden><i class="bi bi-capslock"></i> Caps Lock เปิดอยู่</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary eh-submit" data-loading-text="กำลังเข้าสู่ระบบ...">
+                เข้าสู่ระบบ
+            </button>
+        </form>
+
+        <p class="eh-auth-foot">ยังไม่มีบัญชี? <a href="{% url 'register' %}">ลงทะเบียน</a></p>
+    </section>
+</div>
+{% endblock %}

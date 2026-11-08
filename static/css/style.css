@@ -12,7 +12,7 @@
     --eh-text: #1F2937;
     --eh-text-muted: #6B7280;
     --eh-border: #E5E7EB;
-    --eh-bg: #F7F7F8;
+    --eh-bg: #EEF0F3;
     --eh-card: #FFFFFF;
 
     /* สีบอกสถานะ */
@@ -39,6 +39,11 @@
 
 
 /* ---------- 2. พื้นฐานของหน้า ---------- */
+/* จองที่ให้แถบเลื่อนเสมอ หน้าสั้นกับหน้ายาวจะได้ไม่ขยับซ้ายขวา */
+html {
+    scrollbar-gutter: stable;
+}
+
 body {
     font-family: var(--eh-font);
     background-color: var(--eh-bg);
@@ -97,6 +102,7 @@ h1, h2, h3, h4, h5, h6 {
 .card {
     border-color: var(--eh-border);
     border-radius: var(--eh-radius);
+    box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06), 0 4px 12px rgba(17, 24, 39, 0.04);
 }
 
 
@@ -107,9 +113,25 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .eh-logo {
+    display: inline-flex;
+    align-items: center;
     font-weight: 700;
-    font-size: 1.35rem;
-    letter-spacing: -0.02em;
+    font-size: 1.6rem;
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+/* สัญลักษณ์หน้าโลโก้: ปฏิทินบนพื้นสีส้ม ให้จำแบรนด์ได้แม้มองแวบเดียว */
+.eh-logo-mark {
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 9px;
+    display: grid;
+    place-items: center;
+    font-size: 1.05rem;
+    color: #FFFFFF;
+    background: #EA580C;
+    box-shadow: 0 4px 14px -4px rgba(234, 88, 12, 0.7);
+    margin-right: 0.6rem;
 }
 
 .eh-logo-event {
@@ -134,11 +156,18 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
-/* ---------- 7. Footer ---------- */
-.eh-footer {
-    background-color: var(--eh-card);
-    border-top: 1px solid var(--eh-border);
-    color: var(--eh-text-muted);
+/* ปุ่มออกจากระบบ: ชี้แล้วขึ้นกรอบสีแดง เตือนว่าเป็นการออกจากระบบ */
+.eh-navbar .nav-link.eh-logout {
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding-inline: 0.75rem;
+    transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+.eh-navbar .nav-link.eh-logout:hover,
+.eh-navbar .nav-link.eh-logout:focus-visible {
+    color: #FCA5A5;
+    border-color: #F87171;
+    background-color: rgba(248, 113, 113, 0.12);
 }
 
 
@@ -157,4 +186,753 @@ h1, h2, h3, h4, h5, h6 {
 .eh-status-closed {
     background-color: var(--eh-closed-bg);
     color: var(--eh-closed);
+}
+
+/* =====================================================================
+   9. Navbar ติดด้านบน + เงาเมื่อเลื่อนหน้า (main.js ใส่ class eh-scrolled)
+   ===================================================================== */
+.eh-navbar {
+    transition: box-shadow 0.2s ease;
+}
+.eh-navbar.eh-scrolled {
+    box-shadow: 0 6px 18px -8px rgba(17, 24, 39, 0.45);
+}
+
+
+/* =====================================================================
+   10. หัวหน้า (ใช้ทุกหน้า): ชื่อหน้า + คำอธิบาย + ปุ่มหลักด้านขวา
+   ตัวอย่าง:
+   <header class="eh-page-head">
+     <div><h1>กิจกรรมของฉัน</h1><p>คำอธิบาย</p></div>
+     <a class="btn btn-primary" href="#">สร้างกิจกรรม</a>
+   </header>
+   ===================================================================== */
+.eh-page-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.eh-page-head h1 {
+    font-size: 1.75rem;
+    margin: 0;
+}
+.eh-page-head p {
+    color: var(--eh-text-muted);
+    margin: 0.25rem 0 0;
+}
+.eh-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--eh-text-muted);
+    text-decoration: none;
+    font-size: 0.92rem;
+    margin-bottom: 0.75rem;
+}
+.eh-back:hover {
+    color: var(--eh-primary);
+}
+
+
+/* =====================================================================
+   11. แผงกรอง/ค้นหา และกล่องเนื้อหาสีขาว
+   ===================================================================== */
+.eh-panel {
+    background: var(--eh-card);
+    border: 1px solid var(--eh-border);
+    border-radius: 14px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06), 0 4px 12px rgba(17, 24, 39, 0.04);
+}
+.eh-filter {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 13rem auto;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.eh-filter .eh-clear {
+    grid-column: 1 / -1;
+    font-size: 0.9rem;
+}
+@media (max-width: 640px) {
+    .eh-filter { grid-template-columns: minmax(0, 1fr); }
+}
+
+
+/* =====================================================================
+   12. การ์ดกิจกรรม (หน้าค้นหา, Dashboard)
+   ===================================================================== */
+.eh-event-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 1.25rem;
+}
+.eh-event-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--eh-card);
+    border: 1px solid var(--eh-border);
+    border-radius: 14px;
+    overflow: hidden;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.eh-event-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(234, 88, 12, 0.45);
+    box-shadow: 0 14px 30px -18px rgba(17, 24, 39, 0.45);
+}
+.eh-event-poster {
+    aspect-ratio: 16 / 9;
+    max-width: 100%;
+    width: 100%;
+    object-fit: cover;
+    background: var(--eh-primary-soft);
+    display: grid;
+    place-items: center;
+    color: var(--eh-primary);
+    font-size: 2rem;
+}
+.eh-event-body {
+    padding: 1rem 1.1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+}
+.eh-event-org {
+    font-size: 0.85rem;
+    color: var(--eh-text-muted);
+}
+.eh-event-title {
+    font-size: 1.08rem;
+    margin: 0;
+    line-height: 1.4;
+}
+.eh-meta {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+    color: var(--eh-text-muted);
+}
+.eh-meta li {
+    display: grid;
+    grid-template-columns: 1.1rem 1fr;
+    gap: 0.45rem;
+}
+.eh-meta i {
+    color: var(--eh-text-muted);
+}
+.eh-event-foot {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-top: 0.35rem;
+}
+
+
+/* =====================================================================
+   13. แถบที่นั่ง: <div class="eh-seat" data-count="28" data-max="40"></div>
+   main.js เติมแถบและข้อความให้เอง
+   ===================================================================== */
+.eh-seat {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--eh-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+.eh-seat-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+.eh-seat-track {
+    height: 6px;
+    border-radius: 999px;
+    background: #E5E7EB;
+    overflow: hidden;
+}
+.eh-seat-fill {
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: var(--eh-open);
+    transition: width 0.6s ease;
+}
+.eh-seat.is-almost .eh-seat-fill { background: #D97706; }
+.eh-seat.is-full .eh-seat-fill   { background: var(--eh-closed); }
+.eh-seat.is-almost .eh-seat-state { color: var(--eh-almost); font-weight: 500; }
+.eh-seat.is-full .eh-seat-state   { color: var(--eh-closed); font-weight: 500; }
+
+
+/* =====================================================================
+   14. นับถอยหลังปิดรับสมัคร: <span class="eh-countdown" data-deadline="ISO"></span>
+   ===================================================================== */
+.eh-countdown {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--eh-text-muted);
+}
+.eh-countdown.is-urgent {
+    color: var(--eh-primary);
+    font-weight: 500;
+}
+.eh-countdown.is-ended {
+    color: var(--eh-closed);
+}
+
+
+/* =====================================================================
+   15. ฟอร์ม: ช่องกรอกที่ Django สร้างเอง (ไม่มี class) ให้หน้าตาเหมือน Bootstrap
+   ใช้: <form class="eh-form"> ... </form>
+   ===================================================================== */
+.eh-form {
+    display: grid;
+    gap: 1rem;
+}
+.eh-field {
+    display: grid;
+    gap: 0.4rem;
+}
+.eh-field > label {
+    font-weight: 500;
+    font-size: 0.92rem;
+}
+.eh-field .eh-help {
+    font-size: 0.82rem;
+    color: var(--eh-text-muted);
+}
+.eh-field .eh-error {
+    font-size: 0.85rem;
+    color: #B91C1C;
+}
+.eh-form input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.eh-form select,
+.eh-form textarea {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    font: inherit;
+    color: var(--eh-text);
+    background: #F8FAFC;
+    border: 1px solid var(--eh-border);
+    border-radius: 10px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.eh-form input:focus,
+.eh-form select:focus,
+.eh-form textarea:focus {
+    outline: none;
+    background: #FFFFFF;
+    border-color: var(--eh-brand-orange);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+}
+.eh-field.has-error input,
+.eh-field.has-error select {
+    border-color: #F87171;
+}
+.eh-form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+@media (max-width: 640px) {
+    .eh-form-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ช่องรหัสผ่าน + ปุ่มรูปตา + เตือน Caps Lock */
+.eh-password {
+    position: relative;
+}
+.eh-password input {
+    padding-right: 2.9rem !important;
+}
+.eh-eye {
+    position: absolute;
+    top: 50%;
+    right: 0.45rem;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: var(--eh-text-muted);
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 8px;
+}
+.eh-eye:hover { color: var(--eh-text); background: #F1F5F9; }
+.eh-eye:focus-visible { outline: 2px solid var(--eh-brand-orange); }
+.eh-caps {
+    font-size: 0.82rem;
+    color: var(--eh-almost);
+}
+
+.eh-auth-error {
+    display: flex;
+    gap: 0.55rem;
+    align-items: flex-start;
+    padding: 0.75rem 0.9rem;
+    border-radius: 10px;
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #B91C1C;
+    font-size: 0.92rem;
+}
+
+
+/* =====================================================================
+   16. ปุ่มกำลังทำงาน (main.js ใส่ให้ตอนกด submit ฟอร์ม POST)
+   ===================================================================== */
+.btn.is-loading {
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+
+/* =====================================================================
+   17. สถานะว่าง (ยังไม่มีข้อมูล)
+   ===================================================================== */
+.eh-empty {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--eh-text-muted);
+}
+.eh-empty > i {
+    font-size: 2.2rem;
+    color: var(--eh-primary);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+.eh-empty strong {
+    display: block;
+    color: var(--eh-text);
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+
+/* =====================================================================
+   18. ตาราง
+   ===================================================================== */
+.eh-table {
+    margin: 0;
+    --bs-table-bg: transparent;
+}
+.eh-table thead th {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--eh-text-muted);
+    border-bottom-color: var(--eh-border);
+    white-space: nowrap;
+}
+.eh-table td {
+    vertical-align: middle;
+}
+.eh-table tbody tr {
+    transition: background 0.15s ease;
+}
+.eh-table tbody tr:hover {
+    background: #F8FAFC;
+}
+
+
+/* =====================================================================
+   19. ลดการเคลื่อนไหวสำหรับผู้ใช้ที่ตั้งค่าไว้
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    .eh-event-card, .eh-seat-fill, .eh-navbar, .eh-table tbody tr { transition: none; }
+}
+
+
+/* =====================================================================
+   20. หน้า Login / Register: การ์ดเดียวอยู่กลางจอ
+   ===================================================================== */
+.eh-auth-page {
+    min-height: calc(100vh - 140px);
+    display: grid;
+    place-items: center;
+    padding-block: 1rem 2rem;
+    /* แสงสีส้มจางๆ ด้านหลังการ์ด ให้หน้าไม่ว่างเปล่า */
+    background: radial-gradient(520px 360px at 50% 38%, rgba(234, 88, 12, 0.10), transparent 70%);
+}
+.eh-auth {
+    width: 100%;
+    max-width: 540px;
+    background: var(--eh-card);
+    border: 1px solid var(--eh-border);
+    border-radius: 18px;
+    padding: 3rem 2.75rem 2.25rem;
+    box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06), 0 24px 48px -24px rgba(17, 24, 39, 0.28);
+    animation: eh-rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes eh-rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.eh-auth-head {
+    text-align: center;
+    margin-bottom: 1.75rem;
+}
+.eh-auth-head .eh-logo-mark {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 14px;
+    font-size: 1.45rem;
+    margin: 0 auto 1rem;
+}
+.eh-auth-head h1 {
+    font-size: 1.6rem;
+    margin: 0;
+}
+.eh-auth-head p {
+    color: var(--eh-text-muted);
+    margin: 0.35rem 0 0;
+}
+.eh-auth-foot {
+    margin: 1.5rem 0 0;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--eh-border);
+    text-align: center;
+    color: var(--eh-text-muted);
+    font-size: 0.95rem;
+}
+.eh-auth-foot a {
+    font-weight: 500;
+}
+
+/* ปุ่มหลักของหน้า: จุดเดียวที่มีเงาสี ชี้แล้วยกขึ้น */
+.eh-submit {
+    margin-top: 0.4rem;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 22px -12px rgba(194, 65, 12, 0.8);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.eh-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px -12px rgba(234, 88, 12, 0.9);
+}
+.eh-submit:active {
+    transform: translateY(0);
+}
+
+/* ตัวเลือกประเภทบัญชี (หน้าลงทะเบียน) */
+.eh-role-pick {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+}
+.eh-role-pick label {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.15rem 0.55rem;
+    align-items: center;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--eh-border);
+    border-radius: 10px;
+    background: #F8FAFC;
+    cursor: pointer;
+    font-weight: 500;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+.eh-role-pick label small {
+    grid-column: 2;
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: var(--eh-text-muted);
+}
+.eh-role-pick label:has(input:checked) {
+    border-color: var(--eh-brand-orange);
+    background: #FFF7ED;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+}
+.eh-role-pick input {
+    accent-color: var(--eh-primary);
+}
+.eh-match {
+    font-size: 0.82rem;
+}
+.eh-match.is-ok  { color: var(--eh-open); }
+.eh-match.is-bad { color: #B91C1C; }
+
+@media (prefers-reduced-motion: reduce) {
+    .eh-auth { animation: none; }
+    .eh-submit { transition: none; }
+}
+@media (max-width: 520px) {
+    .eh-auth { padding: 2rem 1.25rem 1.5rem; border-radius: 14px; }
+    .eh-auth-page { place-items: start center; min-height: 0; }
+    .eh-role-pick { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ปุ่มในฟอร์มไม่ยืดเต็มความกว้าง ยกเว้นปุ่มหลักของหน้า Login / ลงทะเบียน */
+.eh-form > .btn,
+.eh-form > a.btn {
+    justify-self: start;
+}
+.eh-form > .eh-submit {
+    justify-self: stretch;
+}
+
+/* =====================================================================
+   21. หน้าโปรไฟล์ (Student / Organizer)
+   ===================================================================== */
+.eh-profile-page {
+    min-height: calc(100vh - 140px);
+    display: grid;
+    place-items: center;
+    padding-block: 0.5rem 1.5rem;
+}
+.eh-profile {
+    width: 100%;
+    max-width: 760px;
+    display: grid;
+    gap: 1.25rem;
+}
+.eh-profile-head {
+    background: var(--eh-card);
+    border: 1px solid var(--eh-border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(17, 24, 39, 0.05), 0 24px 48px -24px rgba(17, 24, 39, 0.35);
+}
+/* แถบด้านบน: เทาถ่าน + แสงส้ม + ลายจุดจางๆ ให้มีมิติ */
+.eh-profile-cover {
+    height: 132px;
+    background-color: var(--eh-navbar-bg);
+    background-image:
+        radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1.4px),
+        radial-gradient(420px 200px at 85% 0%, rgba(234, 88, 12, 0.45), transparent 70%),
+        radial-gradient(300px 180px at 10% 120%, rgba(251, 146, 60, 0.18), transparent 70%);
+    background-size: 18px 18px, auto, auto;
+}
+.eh-profile-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0 2rem 1.75rem;
+    margin-top: -56px;
+}
+.eh-profile-id {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.1rem;
+    min-width: 0;
+}
+.eh-avatar {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #FB923C, #C2410C);
+    border: 5px solid var(--eh-card);
+    box-shadow: 0 10px 24px -8px rgba(194, 65, 12, 0.6);
+    flex-shrink: 0;
+}
+.eh-profile-name {
+    padding-top: 66px;   /* ให้ชื่ออยู่ใต้แถบสีเข้ม ไม่ทับกัน */
+    min-width: 0;
+}
+.eh-profile-name h1 {
+    font-size: 1.6rem;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+.eh-profile-name p {
+    margin: 0.2rem 0 0;
+    color: var(--eh-text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+.eh-profile-name .badge {
+    background: var(--eh-primary-soft);
+    color: var(--eh-primary);
+    font-weight: 500;
+}
+.eh-profile-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding-bottom: 0.35rem;
+}
+
+/* ตัวเลขสรุป */
+.eh-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+.eh-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 1.1rem 1.25rem;
+    background: var(--eh-card);
+    border: 1px solid var(--eh-border);
+    border-radius: 14px;
+    color: inherit;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(17, 24, 39, 0.05);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+a.eh-stat:hover {
+    transform: translateY(-3px);
+    border-color: rgba(234, 88, 12, 0.45);
+    box-shadow: 0 12px 24px -16px rgba(17, 24, 39, 0.4);
+}
+.eh-stat .icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 1.2rem;
+    color: var(--eh-primary);
+    background: var(--eh-primary-soft);
+    flex-shrink: 0;
+}
+.eh-stat strong {
+    display: block;
+    font-size: 1.45rem;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+.eh-stat span {
+    font-size: 0.88rem;
+    color: var(--eh-text-muted);
+}
+.eh-stat .bi-chevron-right {
+    margin-left: auto;
+    color: var(--eh-text-muted);
+}
+
+/* ข้อมูลบัญชี */
+.eh-info {
+    background: var(--eh-card);
+    border: 1px solid var(--eh-border);
+    border-radius: 14px;
+    padding: 0.5rem 1.5rem 0;
+    box-shadow: 0 1px 2px rgba(17, 24, 39, 0.05);
+}
+.eh-info h2 {
+    font-size: 1rem;
+    margin: 1rem 0 0.25rem;
+}
+/* ปุ่มเปลี่ยนรหัสผ่าน ชิดขวาล่าง */
+.eh-info-foot {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 0 1.1rem;
+    border-top: 1px solid var(--eh-border);
+}
+.eh-info dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 2rem;
+}
+.eh-info dl > div {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: 0.25rem 0.6rem;
+    padding: 0.9rem 0;
+    border-top: 1px solid var(--eh-border);
+}
+.eh-info dt {
+    grid-column: 2;
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--eh-text-muted);
+}
+.eh-info dd {
+    grid-column: 2;
+    margin: 0;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+}
+.eh-info dd.is-empty {
+    color: #9CA3AF;
+    font-weight: 400;
+}
+.eh-info dl > div > i {
+    grid-row: 1 / span 2;
+    color: var(--eh-text-muted);
+    padding-top: 0.15rem;
+}
+
+@media (max-width: 640px) {
+    .eh-profile-page { place-items: start center; min-height: 0; }
+    .eh-profile-main { padding: 0 1.25rem 1.25rem; }
+    .eh-profile-actions { width: 100%; }
+    .eh-profile-actions .btn { flex: 1; }
+    .eh-info dl { grid-template-columns: minmax(0, 1fr); }
+    .eh-stats { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .eh-stat { transition: none; }
+}
+
+/* หน้าแก้ไขข้อมูล / เปลี่ยนรหัสผ่าน: การ์ดเดียวกลางจอ */
+.eh-small-card {
+    width: 100%;
+    max-width: 560px;
+    background: var(--eh-card);
+    border: 1px solid var(--eh-border);
+    border-radius: 18px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(17, 24, 39, 0.05), 0 24px 48px -24px rgba(17, 24, 39, 0.3);
+}
+.eh-small-card h1 {
+    font-size: 1.4rem;
+    margin: 0 0 1.25rem;
+}
+.eh-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+.eh-form-actions .ms-auto {
+    margin-left: auto;
+}
+.eh-field .form-text ul {
+    margin: 0.25rem 0 0;
+    padding-left: 1.1rem;
+}
+
+/* =====================================================================
+   22. การ์ดกิจกรรมใน Student Dashboard: ปุ่มดูรายละเอียดชิดขวาล่าง
+   ===================================================================== */
+.dashboard-item {
+    display: flex;
+    flex-direction: column;
+}
+.dashboard-item .eh-event-foot {
+    margin-top: auto;
+    padding-top: 0.75rem;
+}
+.eh-event-foot .register-btn {
+    margin-top: 0;
 }

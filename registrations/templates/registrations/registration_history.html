@@ -1,38 +1,63 @@
 {% extends "base.html" %}
 
-{% block title %}ประวัติการกดสมัครกิจกรรม{% endblock %}
+{% block title %}ประวัติการสมัคร | EventHub{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>ประวัติการกดสมัครกิจกรรม</h2>
-    <p>รายการกิจกรรมที่คุณเคยกดสมัครเข้าร่วม</p>
 
-    {# มีข้อมูล: แสดงเป็นตาราง #}
-    {% if registrations %}
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ชื่อกิจกรรม</th>
-                <th>เวลาที่กดสมัคร</th>
-            </tr>
-        </thead>
-        <tbody>
-            {# วนทีละรายการสมัคร #}
-            {% for r in registrations %}
-            <tr>
-                {# ชื่อกิจกรรม (field title ใน Event) #}
-                <td>{{ r.event.title }}</td>
-                {# วันเวลาที่นักศึกษากดสมัคร (field registered_at ใน Registration) #}
-                <td>{{ r.registered_at|date:"d/m/Y H:i" }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    {# ไม่มีข้อมูลจริงๆ ค่อยแสดงข้อความนี้ #}
-    <div class="empty-state">
-        <p>ยังไม่มีประวัติการกดสมัครกิจกรรม</p>
+<header class="eh-page-head">
+    <div>
+        <h1>ประวัติการสมัคร</h1>
+        <p>กิจกรรมทั้งหมดที่คุณเคยสมัครเข้าร่วม</p>
     </div>
-    {% endif %}
-</div>
+    <a class="btn btn-outline-primary" href="{% url 'events:browse_event_list' %}">
+        <i class="bi bi-search"></i> หากิจกรรมเพิ่ม
+    </a>
+</header>
+
+{% if registrations %}
+    <div class="eh-panel p-0 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table eh-table">
+                <thead>
+                    <tr>
+                        <th>กิจกรรม</th>
+                        <th>วันจัดกิจกรรม</th>
+                        <th>สมัครเมื่อ</th>
+                        <th>สถานะ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% now "Y-m-d H:i" as now_text %}
+                    {% for r in registrations %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'events:browse_event_detail' r.event.id %}" class="fw-medium text-decoration-none">{{ r.event.title }}</a>
+                                <div class="small text-secondary">{{ r.event.organization_name }}</div>
+                            </td>
+                            <td class="text-nowrap">{{ r.event.start_datetime|date:"j M Y H:i" }}</td>
+                            <td class="text-nowrap">{{ r.registered_at|date:"j M Y H:i" }}</td>
+                            <td>
+                                {% if r.event.end_datetime|date:"Y-m-d H:i" < now_text %}
+                                    <span class="badge eh-status-closed">จบแล้ว</span>
+                                {% else %}
+                                    <span class="badge eh-status-open">สมัครแล้ว</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% else %}
+    <div class="eh-panel eh-empty">
+        <i class="bi bi-journal-check"></i>
+        <strong>ยังไม่มีประวัติการสมัคร</strong>
+        เริ่มจากค้นหากิจกรรมที่สนใจ แล้วกดสมัครได้เลย
+        <div class="mt-3">
+            <a class="btn btn-primary" href="{% url 'events:browse_event_list' %}">ไปหากิจกรรม</a>
+        </div>
+    </div>
+{% endif %}
+
 {% endblock %}
