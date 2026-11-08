@@ -17,3 +17,11 @@ staticfiles/
 # IDE
 .vscode/
 .idea/
+
+# Backup files
+*.backup
+*.bak
+
+# Environment variables
+.env.*
+!.env.example
