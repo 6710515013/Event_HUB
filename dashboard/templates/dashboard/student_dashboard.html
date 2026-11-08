@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block title %}Student Dashboard | EventHub{% endblock %}
@@ -5,17 +6,19 @@
 {% block content %}
 
 <style>
+    /* กำหนดสีหลักที่ใช้ในหน้า Student Dashboard */
     :root {
-        --dashboard-primary: #16865C;
-        --dashboard-primary-dark: #126B49;
-        --dashboard-primary-light: #DDF4E8;
-        --dashboard-background: #F0F7F3;
+        --dashboard-primary: var(--eh-primary);
+        --dashboard-primary-dark: var(--eh-primary-hover);
+        --dashboard-primary-light: var(--eh-primary-soft);
+        --dashboard-background: var(--eh-bg);
         --dashboard-card: #FFFFFF;
-        --dashboard-text: #173B2D;
-        --dashboard-muted: #64786D;
-        --dashboard-border: #DDE9E1;
+        --dashboard-text: var(--eh-text);
+        --dashboard-muted: var(--eh-text-muted);
+        --dashboard-border: var(--eh-border);
     }
 
+    /* กำหนดพื้นหลังและระยะห่างของหน้า Dashboard */
     .student-dashboard {
         background: var(--dashboard-background);
         min-height: 100vh;
@@ -23,12 +26,13 @@
         color: var(--dashboard-text);
     }
 
+    /* จำกัดความกว้างเนื้อหาและจัดให้อยู่ตรงกลาง */
     .dashboard-container {
         max-width: 1200px;
         margin: 0 auto;
     }
 
-    /* Header */
+    /* ส่วนหัวของหน้า Dashboard */
     .dashboard-header {
         display: flex;
         justify-content: space-between;
@@ -38,20 +42,22 @@
         margin-bottom: 28px;
     }
 
+    /* รูปแบบหัวข้อหลัก */
     .dashboard-header h1 {
         font-size: 28px;
         font-weight: 700;
         margin: 0 0 8px;
-        color: #126B49;
+        color: var(--eh-text);
     }
 
+    /* รูปแบบข้อความใต้หัวข้อ */
     .dashboard-header p {
-        color: #64786D;
+        color: var(--eh-text-muted);
         font-size: 15px;
         margin: 0;
     }
 
-    /* Section */
+    /* กล่องเนื้อหาแต่ละส่วน */
     .dashboard-section {
         background: var(--dashboard-card);
         border: 1px solid var(--dashboard-border);
@@ -61,6 +67,7 @@
         box-shadow: 0 3px 12px rgba(23, 32, 51, 0.03);
     }
 
+    /* ส่วนหัวของแต่ละกล่อง */
     .dashboard-section-header {
         display: flex;
         justify-content: space-between;
@@ -70,30 +77,33 @@
         flex-wrap: wrap;
     }
 
+    /* รูปแบบหัวข้อของกล่อง */
     .dashboard-section h2 {
         font-size: 19px;
         font-weight: 700;
         margin: 0;
     }
 
+    /* ข้อความอธิบายใต้หัวข้อ */
     .dashboard-section-description {
         color: var(--dashboard-muted);
         font-size: 13px;
         margin-top: 6px;
     }
 
-    /* Search Container */
+    /* กล่องค้นหาและตัวกรอง */
     .search-container {
         margin-bottom: 24px;
     }
 
-    /* Search by name */
+    /* จัดช่องค้นหาและปุ่มให้อยู่บรรทัดเดียวกัน */
     .event-search {
         display: flex;
         gap: 10px;
         margin-bottom: 12px;
     }
 
+    /* รูปแบบช่องค้นหาชื่อกิจกรรม */
     .event-search input[type="text"] {
         flex: 1;
         min-width: 0;
@@ -104,12 +114,13 @@
         outline: none;
     }
 
+    /* เปลี่ยนสีขอบเมื่อเลือกช่องค้นหาหรือวันที่ */
     .event-search input[type="text"]:focus,
     .filter-row input:focus {
         border-color: var(--dashboard-primary);
     }
 
-    /* Search button */
+    /* รูปแบบปุ่มค้นหา */
     .search-button {
         width: 48px;
         height: 45px;
@@ -124,17 +135,19 @@
         flex-shrink: 0;
     }
 
+    /* เปลี่ยนสีปุ่มเมื่อเมาส์ชี้ */
     .search-button:hover {
         background: var(--dashboard-primary-dark);
     }
 
-    /* Date and Category filters */
+    /* จัดช่องเลือกวันที่และประเภทกิจกรรม */
     .filter-row {
         display: flex;
         gap: 12px;
         align-items: stretch;
     }
 
+    /* รูปแบบช่องเลือกวันที่ */
     .filter-row input[type="date"] {
         flex: 1;
         min-width: 0;
@@ -149,13 +162,14 @@
         outline: none;
     }
 
-    /* Category Dropdown */
+    /* กล่อง Dropdown สำหรับเลือกประเภทกิจกรรม */
     .category-dropdown {
         flex: 1;
         min-width: 0;
         position: relative;
     }
 
+    /* รูปแบบหัวข้อ Dropdown */
     .category-dropdown summary {
         display: flex;
         justify-content: space-between;
@@ -175,10 +189,12 @@
         outline: none;
     }
 
+    /* ซ่อนสัญลักษณ์ Dropdown เริ่มต้นของ Browser */
     .category-dropdown summary::-webkit-details-marker {
         display: none;
     }
 
+    /* เพิ่มลูกศรให้ Dropdown */
     .category-dropdown summary::after {
         content: "▼";
         font-size: 11px;
@@ -186,21 +202,24 @@
         transition: transform 0.2s ease;
     }
 
+    /* เปลี่ยนขอบเมื่อเปิด Dropdown */
     .category-dropdown[open] summary {
         border-color: var(--dashboard-primary);
         border-radius: 10px 10px 0 0;
     }
 
+    /* หมุนลูกศรเมื่อเปิด Dropdown */
     .category-dropdown[open] summary::after {
         transform: rotate(180deg);
     }
 
+    /* แสดงกรอบเมื่อเลือก Dropdown ด้วยคีย์บอร์ด */
     .category-dropdown summary:focus-visible {
         border-color: var(--dashboard-primary);
-        box-shadow: 0 0 0 3px rgba(22, 134, 92, 0.12);
+        box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.12);
     }
 
-    /* Checkbox list */
+    /* กล่องรายการ Checkbox ของประเภทกิจกรรม */
     .category-dropdown-list {
         position: absolute;
         top: 100%;
@@ -214,9 +233,10 @@
         border: 1px solid var(--dashboard-primary);
         border-top: none;
         border-radius: 0 0 10px 10px;
-        box-shadow: 0 8px 18px rgba(23, 59, 45, 0.12);
+        box-shadow: 0 8px 18px rgba(17, 24, 39, 0.12);
     }
 
+    /* รูปแบบรายการประเภทกิจกรรมแต่ละรายการ */
     .category-option {
         display: flex;
         align-items: center;
@@ -228,10 +248,12 @@
         cursor: pointer;
     }
 
+    /* เปลี่ยนพื้นหลังเมื่อเมาส์ชี้รายการ */
     .category-option:hover {
         background: var(--dashboard-primary-light);
     }
 
+    /* รูปแบบ Checkbox */
     .category-option input[type="checkbox"] {
         width: 17px;
         height: 17px;
@@ -241,11 +263,12 @@
         flex-shrink: 0;
     }
 
+    /* จัดข้อความประเภทกิจกรรม */
     .category-option span {
         line-height: 1.5;
     }
 
-    /* Clear filters */
+    /* ลิงก์ล้างตัวกรอง */
     .clear-filter {
         display: inline-block;
         margin-top: 12px;
@@ -254,18 +277,19 @@
         text-decoration: none;
     }
 
+    /* ขีดเส้นใต้ลิงก์เมื่อเมาส์ชี้ */
     .clear-filter:hover {
         text-decoration: underline;
     }
 
-    /* Event List */
-
+    /* จัดการ์ดกิจกรรมเป็น 2 คอลัมน์ */
     .event-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 20px;
     }
 
+    /* รูปแบบการ์ดกิจกรรม */
     .dashboard-item {
         min-width: 0;
         border: 1px solid var(--dashboard-border);
@@ -283,17 +307,20 @@
         margin-bottom: 14px;
     }
 
+    /* เปลี่ยนสีการ์ดเมื่อเมาส์ชี้ */
     .dashboard-item:hover {
         border-color: var(--dashboard-primary);
-        background: #F5FBF7;
+        background: #FFF7ED;
     }
 
+    /* รูปแบบชื่อกิจกรรม */
     .dashboard-item h3 {
         font-size: 16px;
         font-weight: 600;
         margin: 0 0 8px;
     }
 
+    /* รูปแบบรายละเอียดกิจกรรม */
     .dashboard-item p {
         color: var(--dashboard-muted);
         font-size: 14px;
@@ -301,12 +328,13 @@
         margin: 0;
     }
 
-    /* Event Categories */
+    /* กล่องแสดงประเภทกิจกรรม */
     .event-categories {
         margin-top: 8px;
         font-size: 14px;
     }
 
+    /* ป้ายชื่อประเภทกิจกรรม */
     .event-category-badge {
         display: inline-block;
         margin: 4px 4px 0 0;
@@ -317,7 +345,7 @@
         font-size: 12px;
     }
 
-    /* Register Button */
+    /* ปุ่มดูรายละเอียดกิจกรรม */
     .register-btn {
         display: inline-block;
         margin-top: 16px;
@@ -331,11 +359,12 @@
         transition: background 0.2s ease;
     }
 
+    /* เปลี่ยนสีปุ่มเมื่อเมาส์ชี้ */
     .register-btn:hover {
         background: var(--dashboard-primary-dark);
     }
 
-    /* Empty State */
+    /* กล่องแจ้งเตือนเมื่อไม่พบกิจกรรม */
     .dashboard-empty {
         background: #F8FAFC;
         border: 1px dashed #CBD5E1;
@@ -346,6 +375,7 @@
         font-size: 14px;
     }
 
+    /* รูปแบบหัวข้อในกล่องแจ้งเตือน */
     .dashboard-empty strong {
         display: block;
         color: var(--dashboard-text);
@@ -353,7 +383,7 @@
         margin-bottom: 8px;
     }
 
-    /* Responsive */
+    /* ปรับการ์ดให้เหลือ 1 คอลัมน์บนหน้าจอขนาดเล็ก */
     @media (max-width: 600px) {
         .event-grid {
             grid-template-columns: 1fr;
@@ -369,6 +399,7 @@
         }
     }
 
+    /* ปรับระยะห่างและขนาดตัวอักษรบนมือถือ */
     @media (max-width: 768px) {
         .student-dashboard {
             padding: 18px;
@@ -384,27 +415,25 @@
     }
 </style>
 
-
+<!-- ส่วนเนื้อหาหลักของหน้า Student Dashboard -->
 <main class="student-dashboard">
 
     <div class="dashboard-container">
 
-        <!-- Header -->
+        <!-- ส่วนหัวของหน้า -->
         <header class="dashboard-header">
             <div>
-                <h1>EventHub</h1>
-                <p>ค้นหาและเข้าร่วมกิจกรรมที่น่าสนใจ</p>
+                <h1>สวัสดี {{ user.first_name|default:user.username }}</h1>
+                <p>กิจกรรมที่กำลังเปิดรับสมัคร ค้นหาตามชื่อ วันที่ หรือประเภทได้เลย</p>
             </div>
-
         </header>
 
-
-        <!-- Search Bar -->
+        <!-- ส่วนค้นหาและกรองกิจกรรม -->
         <div class="search-container">
 
             <form method="GET" id="eventSearchForm">
 
-                <!-- Search by activity name -->
+                <!-- ช่องค้นหาชื่อกิจกรรม -->
                 <div class="event-search">
 
                     <input
@@ -415,6 +444,7 @@
                         value="{{ search_query }}"
                     >
 
+                    <!-- ปุ่มค้นหา -->
                     <button
                         type="submit"
                         class="search-button"
@@ -435,11 +465,10 @@
 
                 </div>
 
-
-                <!-- Date and Category filters -->
+                <!-- ส่วนเลือกวันที่และประเภทกิจกรรม -->
                 <div class="filter-row">
 
-                    <!-- Date Filter -->
+                    <!-- ตัวกรองวันที่เริ่มกิจกรรม -->
                     <input
                         type="date"
                         name="date"
@@ -448,7 +477,7 @@
                         title="เลือกวันที่จัดกิจกรรม"
                     >
 
-                    <!-- Category Dropdown -->
+                    <!-- Dropdown สำหรับเลือกประเภทกิจกรรม -->
                     <details class="category-dropdown" id="categoryDropdown">
 
                         <summary>
@@ -460,10 +489,12 @@
 
                         <div class="category-dropdown-list">
 
+                            <!-- แสดงประเภทกิจกรรมทั้งหมด -->
                             {% for category in categories %}
 
                                 <label class="category-option">
 
+                                    <!-- Checkbox สำหรับเลือกประเภทกิจกรรม -->
                                     <input
                                         type="checkbox"
                                         name="category"
@@ -479,6 +510,7 @@
 
                             {% empty %}
 
+                                <!-- แสดงข้อความเมื่อยังไม่มีประเภทกิจกรรม -->
                                 <p>ยังไม่มีประเภทกิจกรรม</p>
 
                             {% endfor %}
@@ -489,8 +521,7 @@
 
                 </div>
 
-
-                <!-- Clear Filters -->
+                <!-- ล้างค่าการค้นหาและตัวกรองทั้งหมด -->
                 <a
                     href="{% url 'dashboard:student_dashboard' %}"
                     class="clear-filter"
@@ -502,75 +533,102 @@
 
         </div>
 
-
-        <!-- Events Section -->
+        <!-- ส่วนแสดงรายการกิจกรรม -->
         <section class="dashboard-section" id="eventsSection">
 
             <div class="dashboard-section-header">
                 <div>
-                    <h2>Events</h2>
+                    <h2>กิจกรรมที่เปิดรับสมัคร</h2>
                     <p class="dashboard-section-description">
                         ค้นหาและดูกิจกรรมที่น่าสนใจ
                     </p>
                 </div>
             </div>
 
+            <!-- ตรวจสอบว่ามีกิจกรรมที่ค้นพบหรือไม่ -->
             {% if events %}
 
                 <div class="dashboard-list">
 
                     <div class="event-grid">
 
-                    {% for event in events %}
+                        <!-- วนแสดงการ์ดกิจกรรมทีละรายการ -->
+                        {% for event in events %}
 
-                        <article class="dashboard-item">
+                            <article class="dashboard-item">
 
-                            {% if event.poster %}
-                                <img
-                                    src="{{ event.poster.url }}"
-                                    alt="โปสเตอร์กิจกรรม {{ event.title }}"
-                                    class="dashboard-event-poster"
-                                >
-                            {% endif %}
+                                <!-- แสดงโปสเตอร์เมื่อกิจกรรมมีรูปภาพ -->
+                                {% if event.poster %}
+                                    <img
+                                        src="{{ event.poster.url }}"
+                                        alt="โปสเตอร์กิจกรรม {{ event.title }}"
+                                        class="dashboard-event-poster"
+                                    >
+                                {% endif %}
 
-                            <h3>{{ event.title }}</h3>
+                                <!-- แสดงชื่อกิจกรรม -->
+                                <h3>{{ event.title }}</h3>
 
-                            <p>
-                                <strong>วันและเวลาจัด:</strong>
-                                {{ event.start_datetime|date:"d/m/Y H:i" }}
-                                -
-                                {{ event.end_datetime|date:"d/m/Y H:i" }}
-                            </p>
+                                <!-- แสดงวันและเวลาจัดกิจกรรม -->
+                                <p>
+                                    <strong>วันและเวลาจัด:</strong>
+                                    {{ event.start_datetime|date:"d/m/Y H:i" }}
+                                    -
+                                    {{ event.end_datetime|date:"d/m/Y H:i" }}
+                                </p>
 
-                            <p>
-                                <strong>สถานที่:</strong>
-                                {{ event.location }}
-                            </p>
+                                <!-- แสดงสถานที่จัดกิจกรรม -->
+                                <p>
+                                    <strong>สถานที่:</strong>
+                                    {{ event.location }}
+                                </p>
 
-                            <p>
-                                <strong>องค์กรผู้จัด:</strong>
-                                {{ event.organization_name }}
-                            </p>
+                                <!-- แสดงชื่อองค์กรผู้จัด -->
+                                <p>
+                                    <strong>องค์กรผู้จัด:</strong>
+                                    {{ event.organization_name }}
+                                </p>
 
-                            <div class="event-categories">
-                                <strong>รูปแบบกิจกรรม:</strong>
+                                <!-- แสดงประเภทกิจกรรม -->
+                                <div class="event-categories">
+                                    <strong>รูปแบบกิจกรรม:</strong>
 
-                                {% for category in event.categories.all %}
-                                    <span class="event-category-badge">
-                                        {{ category.name }}
-                                    </span>
-                                {% empty %}
-                                    <span>ยังไม่ได้ระบุรูปแบบกิจกรรม</span>
-                                {% endfor %}
-                            </div>
-                        </article>
+                                    {% for category in event.categories.all %}
+                                        <span class="event-category-badge">
+                                            {{ category.name }}
+                                        </span>
+                                    {% empty %}
+                                        <span>ยังไม่ได้ระบุรูปแบบกิจกรรม</span>
+                                    {% endfor %}
+                                </div>
 
-                    {% endfor %}
+                                <!-- จำนวนผู้สนใจและนับถอยหลังปิดรับสมัคร (วาดโดย static/js/main.js) -->
+                                <div class="eh-seat" data-count="{{ event.registration_count|default:0 }}" data-max="{{ event.max_participants }}">
+                                    สนใจแล้ว {{ event.registration_count|default:0 }} คน · รับ {{ event.max_participants }} คน
+                                </div>
+
+                                <!-- แถวล่าง: นับถอยหลังด้านซ้าย ปุ่มดูรายละเอียดด้านขวา -->
+                                <div class="eh-event-foot">
+                                    <span class="eh-countdown" data-deadline="{{ event.registration_deadline|date:'c' }}"></span>
+                                    <a
+                                        href="{% url 'events:browse_event_detail' event.id %}"
+                                        class="register-btn"
+                                    >
+                                        ดูรายละเอียด
+                                    </a>
+                                </div>
+
+                            </article>
+
+                        {% endfor %}
 
                     </div>
 
+                </div>
+
             {% else %}
 
+                <!-- แสดงข้อความเมื่อไม่พบกิจกรรม -->
                 <div class="dashboard-empty">
                     <strong>ไม่พบกิจกรรมที่ตรงกับการค้นหา</strong>
                     ลองเปลี่ยนชื่อกิจกรรม วันที่ หรือประเภทกิจกรรม
@@ -584,11 +642,11 @@
 
 </main>
 
-
-<!-- Live Search -->
+<!-- JavaScript สำหรับค้นหาและกรองกิจกรรมโดยไม่ต้องโหลดหน้าใหม่ -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
+    // ดึง Element ที่ต้องใช้งานจากหน้าเว็บ
     const form = document.getElementById("eventSearchForm");
     const searchInput = document.getElementById("eventSearchInput");
     const dateFilter = document.getElementById("eventDateFilter");
@@ -598,38 +656,48 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     const eventsSection = document.getElementById("eventsSection");
 
+    // ตัวแปรควบคุมเวลาค้นหาและคำขอที่กำลังทำงาน
     let searchTimer;
     let controller;
 
+    // ฟังก์ชันค้นหาและกรองกิจกรรม
     async function performSearch() {
 
+        // ยกเลิกเวลาค้นหาเดิมก่อนเริ่มค้นหาใหม่
         clearTimeout(searchTimer);
 
+        // ยกเลิกคำขอเดิมหากยังทำงานอยู่
         if (controller) {
             controller.abort();
         }
 
-        // เก็บค่าที่เลือกไว้ก่อนค้นหา
+        // เก็บ ID ของประเภทกิจกรรมที่เลือกไว้
         const selectedCategories = Array.from(
             form.querySelectorAll('input[name="category"]:checked')
         ).map(checkbox => checkbox.value);
 
+        // สร้าง URL Parameters สำหรับส่งไปยัง Django
         const params = new URLSearchParams();
 
+        // ส่งค่าค้นหาชื่อกิจกรรมและวันที่
         params.set("q", searchInput.value);
         params.set("date", dateFilter.value);
 
+        // ส่งประเภทกิจกรรมที่เลือกทั้งหมด
         selectedCategories.forEach(category => {
             params.append("category", category);
         });
 
+        // สร้าง URL ใหม่พร้อมค่าตัวกรอง
         const url = new URL(window.location.href);
         url.search = params.toString();
 
+        // สร้างตัวควบคุมคำขอ
         controller = new AbortController();
 
         try {
 
+            // ส่งคำขอ GET ไปยังหน้า Dashboard
             const response = await fetch(url, {
                 method: "GET",
                 headers: {
@@ -638,23 +706,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 signal: controller.signal
             });
 
+            // ตรวจสอบว่าคำขอสำเร็จหรือไม่
             if (!response.ok) {
                 throw new Error("Search request failed");
             }
 
+            // รับ HTML ที่ Django ส่งกลับมา
             const html = await response.text();
+
+            // แปลง HTML เป็น Document เพื่อค้นหาส่วนกิจกรรม
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, "text/html");
 
+            // ค้นหาส่วนแสดงกิจกรรมจาก HTML ใหม่
             const newSection = doc.getElementById("eventsSection");
 
+            // อัปเดตเฉพาะส่วนรายการกิจกรรม
             if (newSection) {
                 eventsSection.innerHTML = newSection.innerHTML;
 
+                // เปลี่ยน URL โดยไม่ต้องโหลดหน้าใหม่
                 window.history.replaceState({}, "", url);
             }
 
-            // คืนสถานะ Checkbox หลังค้นหา
+            // คืนสถานะ Checkbox หลังจากค้นหา
             selectedCategories.forEach(categoryId => {
                 const checkbox = form.querySelector(
                     `input[name="category"][value="${categoryId}"]`
@@ -665,11 +740,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
 
-            // อัปเดตจำนวนประเภทที่เลือก
+            // อัปเดตจำนวนประเภทกิจกรรมที่เลือก
             selectedCategoryCount.textContent = selectedCategories.length;
 
         } catch (error) {
 
+            // แสดงข้อผิดพลาดใน Console ยกเว้นกรณียกเลิกคำขอ
             if (error.name !== "AbortError") {
                 console.error("Search error:", error);
             }
@@ -677,42 +753,50 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // ค้นหาขณะพิมพ์
+    // ค้นหาอัตโนมัติเมื่อผู้ใช้พิมพ์ชื่อกิจกรรม
     searchInput.addEventListener("input", function () {
+
+        // หน่วงเวลา 400 มิลลิวินาทีก่อนเริ่มค้นหา
         clearTimeout(searchTimer);
 
         searchTimer = setTimeout(function () {
             performSearch();
         }, 400);
+
     });
 
-    // เลือกวันที่
+    // เริ่มค้นหาเมื่อผู้ใช้เปลี่ยนวันที่
     dateFilter.addEventListener("change", performSearch);
 
-    // เลือก Checkbox หลายประเภท
+    // เริ่มค้นหาเมื่อผู้ใช้เลือกหรือยกเลิกประเภทกิจกรรม
     form.querySelectorAll('input[name="category"]').forEach(function (checkbox) {
 
         checkbox.addEventListener("change", function () {
 
+            // นับจำนวนประเภทกิจกรรมที่เลือก
             const count = form.querySelectorAll(
                 'input[name="category"]:checked'
             ).length;
 
+            // แสดงจำนวนประเภทกิจกรรมที่เลือก
             selectedCategoryCount.textContent = count;
 
+            // ค้นหากิจกรรมตามประเภทที่เลือก
             performSearch();
+
         });
 
     });
 
-    // ปุ่มค้นหา
+    // ป้องกันการโหลดหน้าใหม่เมื่อกดปุ่มค้นหา
     form.addEventListener("submit", function (event) {
         event.preventDefault();
         performSearch();
     });
 
-    // ปิด Dropdown เมื่อคลิกข้างนอก
+    // ปิด Dropdown เมื่อคลิกบริเวณด้านนอก
     document.addEventListener("click", function (event) {
+
         if (
             categoryDropdown &&
             categoryDropdown.open &&
@@ -720,6 +804,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
             categoryDropdown.open = false;
         }
+
     });
 
 });
