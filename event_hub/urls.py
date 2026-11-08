@@ -17,7 +17,8 @@ Including another URLconf
 
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
+from django.views.static import serve
 from django.shortcuts import redirect
 from django.conf import settings
 from django.conf.urls.static import static
@@ -36,8 +37,7 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path('core/', include('core.urls')),
 ]
-if settings.DEBUG:
-    urlpatterns += static(
-        settings.MEDIA_URL,
-        document_root=settings.MEDIA_ROOT
-    )
+# ไฟล์ที่ผู้ใช้อัปโหลด (โปสเตอร์) ให้ Django เสิร์ฟเองทั้งตอน DEBUG และบน Render
+urlpatterns += [
+    re_path(r"^media/(?P<path>.*)$", serve, {"document_root": settings.MEDIA_ROOT}),
+]
