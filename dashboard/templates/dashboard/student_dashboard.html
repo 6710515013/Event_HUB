@@ -8,14 +8,14 @@
 <style>
     /* กำหนดสีหลักที่ใช้ในหน้า Student Dashboard */
     :root {
-        --dashboard-primary: #16865C;
-        --dashboard-primary-dark: #126B49;
-        --dashboard-primary-light: #DDF4E8;
-        --dashboard-background: #F0F7F3;
+        --dashboard-primary: var(--eh-primary);
+        --dashboard-primary-dark: var(--eh-primary-hover);
+        --dashboard-primary-light: var(--eh-primary-soft);
+        --dashboard-background: var(--eh-bg);
         --dashboard-card: #FFFFFF;
-        --dashboard-text: #173B2D;
-        --dashboard-muted: #64786D;
-        --dashboard-border: #DDE9E1;
+        --dashboard-text: var(--eh-text);
+        --dashboard-muted: var(--eh-text-muted);
+        --dashboard-border: var(--eh-border);
     }
 
     /* กำหนดพื้นหลังและระยะห่างของหน้า Dashboard */
@@ -47,12 +47,12 @@
         font-size: 28px;
         font-weight: 700;
         margin: 0 0 8px;
-        color: #126B49;
+        color: var(--eh-text);
     }
 
     /* รูปแบบข้อความใต้หัวข้อ */
     .dashboard-header p {
-        color: #64786D;
+        color: var(--eh-text-muted);
         font-size: 15px;
         margin: 0;
     }
@@ -216,7 +216,7 @@
     /* แสดงกรอบเมื่อเลือก Dropdown ด้วยคีย์บอร์ด */
     .category-dropdown summary:focus-visible {
         border-color: var(--dashboard-primary);
-        box-shadow: 0 0 0 3px rgba(22, 134, 92, 0.12);
+        box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.12);
     }
 
     /* กล่องรายการ Checkbox ของประเภทกิจกรรม */
@@ -233,7 +233,7 @@
         border: 1px solid var(--dashboard-primary);
         border-top: none;
         border-radius: 0 0 10px 10px;
-        box-shadow: 0 8px 18px rgba(23, 59, 45, 0.12);
+        box-shadow: 0 8px 18px rgba(17, 24, 39, 0.12);
     }
 
     /* รูปแบบรายการประเภทกิจกรรมแต่ละรายการ */
@@ -310,7 +310,7 @@
     /* เปลี่ยนสีการ์ดเมื่อเมาส์ชี้ */
     .dashboard-item:hover {
         border-color: var(--dashboard-primary);
-        background: #F5FBF7;
+        background: #FFF7ED;
     }
 
     /* รูปแบบชื่อกิจกรรม */
@@ -423,8 +423,8 @@
         <!-- ส่วนหัวของหน้า -->
         <header class="dashboard-header">
             <div>
-                <h1>EventHub</h1>
-                <p>ค้นหาและเข้าร่วมกิจกรรมที่น่าสนใจ</p>
+                <h1>สวัสดี {{ user.first_name|default:user.username }}</h1>
+                <p>กิจกรรมที่กำลังเปิดรับสมัคร ค้นหาตามชื่อ วันที่ หรือประเภทได้เลย</p>
             </div>
         </header>
 
@@ -538,7 +538,7 @@
 
             <div class="dashboard-section-header">
                 <div>
-                    <h2>Events</h2>
+                    <h2>กิจกรรมที่เปิดรับสมัคร</h2>
                     <p class="dashboard-section-description">
                         ค้นหาและดูกิจกรรมที่น่าสนใจ
                     </p>
@@ -602,6 +602,11 @@
                                     {% endfor %}
                                 </div>
 
+                                <!-- แถบที่นั่งและนับถอยหลังปิดรับสมัคร (วาดโดย static/js/main.js) -->
+                                <div class="eh-seat" data-count="{{ event.registration_count|default:0 }}" data-max="{{ event.max_participants }}">
+                                    สมัครแล้ว {{ event.registration_count|default:0 }} / {{ event.max_participants }}
+                                </div>
+                                <span class="eh-countdown" data-deadline="{{ event.registration_deadline|date:'c' }}"></span>
                                 <!-- ปุ่มเปิดหน้ารายละเอียดกิจกรรมตาม ID -->
                                 <a
                                     href="{% url 'events:browse_event_detail' event.id %}"

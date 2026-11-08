@@ -10,14 +10,14 @@
 <style>
     /* กำหนดตัวแปรสีหลักสำหรับ Organizer Dashboard */
     :root {
-        --dashboard-primary: #0878F9;       /* สีหลักของ Dashboard */
-        --dashboard-primary-dark: #075FC5;   /* สีหลักโทนเข้ม */
-        --dashboard-primary-light: #DCEBFC;  /* สีหลักโทนอ่อน */
-        --dashboard-background: #F0F5FC;     /* สีพื้นหลัง Dashboard */
+        --dashboard-primary: var(--eh-primary);       /* สีหลักของ Dashboard */
+        --dashboard-primary-dark: var(--eh-primary-hover);   /* สีหลักโทนเข้ม */
+        --dashboard-primary-light: var(--eh-primary-soft);  /* สีหลักโทนอ่อน */
+        --dashboard-background: var(--eh-bg);     /* สีพื้นหลัง Dashboard */
         --dashboard-card: #FFFFFF;           /* สีพื้นหลัง Card */
-        --dashboard-text: #172033;           /* สีข้อความหลัก */
-        --dashboard-muted: #64748B;          /* สีข้อความรอง */
-        --dashboard-border: #E2E8F0;          /* สีเส้นขอบ */
+        --dashboard-text: var(--eh-text);           /* สีข้อความหลัก */
+        --dashboard-muted: var(--eh-text-muted);          /* สีข้อความรอง */
+        --dashboard-border: var(--eh-border);          /* สีเส้นขอบ */
     }
 
     /* กำหนดพื้นที่หลักของ Organizer Dashboard */
@@ -50,20 +50,20 @@
         font-size: 28px;
         font-weight: 700;
         margin: 0 0 8px;
-        color: #123B70;
+        color: var(--eh-text);
     }
 
     /* กำหนดรูปแบบข้อความอธิบายใต้หัวข้อ */
     .organizer-header p {
-        color: #64748B;
+        color: var(--eh-text-muted);
         font-size: 15px;
         margin: 0;
     }
 
     /* รูปแบบป้ายแสดง Role Organizer */
     .organizer-role {
-        background: #DCEBFC;
-        color: #075FC5;
+        background: var(--eh-primary-soft);
+        color: var(--eh-primary-hover);
         padding: 9px 16px;
         border-radius: 24px; /* ทำให้ป้ายมีมุมโค้ง */
         font-size: 13px;
@@ -167,7 +167,7 @@
     /* เปลี่ยนสีขอบและพื้นหลังเมื่อเมาส์ชี้ที่กิจกรรม */
     .organizer-event-item:hover {
         border-color: var(--dashboard-primary);
-        background: #F8FBFF;
+        background: #FFF7ED;
     }
 
     /* รูปแบบชื่อกิจกรรม */
@@ -307,7 +307,7 @@
         <header class="organizer-header">
             <div>
                 <!-- แสดงชื่อหน้า Dashboard -->
-                <h1>Organizer Dashboard</h1>
+                <h1>สวัสดี {{ user.first_name|default:user.username }}</h1>
 
                 <!-- คำอธิบายหน้าที่ของ Dashboard -->
                 <p>
@@ -323,7 +323,7 @@
             <!-- ส่วนหัว My Events และปุ่ม Add Event -->
             <div class="organizer-section-header">
                 <div>
-                    <h2>My Events</h2>
+                    <h2>กิจกรรมของฉัน</h2>
                     <p class="organizer-section-description">
                         รายการกิจกรรมที่คุณเป็นผู้จัด
                     </p>
@@ -332,7 +332,7 @@
                 <!-- ปุ่มเพิ่มกิจกรรม -->
                 <a href="{% url 'events:event_create' %}" class="organizer-add-button">
                     <span>+</span>
-                    Add Event
+                    สร้างกิจกรรม
                 </a>
                 
             </div>
@@ -396,20 +396,20 @@
                             </div>
 
                             <!-- จำนวนผู้ลงทะเบียน -->
-                            <span class="organizer-event-count">
-                                Registrations:
-                                {{ event.registration_count|default:"0" }}
-                            </span>
+                            <div class="eh-seat" data-count="{{ event.registration_count|default:0 }}" data-max="{{ event.max_participants }}">
+                                ผู้สมัคร {{ event.registration_count|default:0 }} / {{ event.max_participants }}
+                            </div>
+                            <span class="eh-countdown" data-deadline="{{ event.registration_deadline|date:'c' }}"></span>
 
                             <!-- ปุ่มจัดการกิจกรรม -->
                             <div class="event-actions">
 
                                 <a href="{% url 'events:event_edit' event.id %}" class="event-edit-btn">
-                                    Edit
+                                    แก้ไข
                                 </a>
 
                                 <a href="{% url 'events:event_delete' event.id %}" class="event-delete-btn">
-                                    Delete
+                                    ลบ
                                 </a>
 
                             </div>
@@ -425,7 +425,7 @@
                 <!-- กรณียังไม่มีกิจกรรม -->
                 <div class="organizer-empty">
                     <strong>
-                        You have not created any events yet.
+                        ยังไม่มีกิจกรรม
                     </strong>
                     กิจกรรมที่คุณสร้างจะแสดงในส่วนนี้
                 </div>

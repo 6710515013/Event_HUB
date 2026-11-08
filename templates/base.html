@@ -16,7 +16,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
     {# ---------- 3. CSS ส่วนกลางของทีม (ต้องโหลดหลัง Bootstrap เพื่อให้ทับได้) ---------- #}
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+        <link href="{% static 'css/style.css' %}?v=11" rel="stylesheet">
 
     {# ---------- 4. CSS เฉพาะหน้า: หน้าไหนต้องการ ให้ใส่ใน block นี้ ---------- #}
     {% block extra_css %}{% endblock %}
@@ -24,7 +24,7 @@
 <body class="d-flex flex-column min-vh-100">
 
     {# ======================= Navbar ======================= #}
-    <nav class="navbar navbar-expand-lg bg-dark eh-navbar" data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg bg-dark eh-navbar sticky-top" data-bs-theme="dark">
         <div class="container">
 
             {# โลโก้: กดแล้วไป Dashboard ของ Role ตัวเอง #}
@@ -35,7 +35,7 @@
             {% else %}
                 <a class="navbar-brand eh-logo" href="{% url 'home' %}">
             {% endif %}
-                <span class="eh-logo-event">Event</span><span class="eh-logo-hub">Hub</span>
+                                <span class="eh-logo-mark" aria-hidden="true"><i class="bi bi-calendar2-event"></i></span><span class="eh-logo-event">Event</span><span class="eh-logo-hub">Hub</span>
             </a>
 
             {# ปุ่มเมนูแบบพับได้ (แสดงเฉพาะจอเล็ก เช่น มือถือ) #}
@@ -54,6 +54,10 @@
                         <li class="nav-item">
                             <a class="nav-link {% if view_name == 'dashboard:student_dashboard' %}active{% endif %}"
                                href="{% url 'dashboard:student_dashboard' %}">หน้าหลัก</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if view_name == 'events:browse_event_list' or view_name == 'events:browse_event_detail' %}active{% endif %}"
+                               href="{% url 'events:browse_event_list' %}">ค้นหากิจกรรม</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {% if view_name == 'registrations:history' %}active{% endif %}"
@@ -100,7 +104,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">
+                            <a class="nav-link eh-logout" href="{% url 'logout' %}">
                                 <i class="bi bi-box-arrow-right"></i> ออกจากระบบ
                             </a>
                         </li>
@@ -110,7 +114,8 @@
                                href="{% url 'login' %}">เข้าสู่ระบบ</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-primary btn-sm" href="{% url 'register' %}">สมัครสมาชิก</a>
+                                                        <a class="nav-link {% if view_name == 'register' %}active{% endif %}"
+                               href="{% url 'register' %}">ลงทะเบียน</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -142,19 +147,11 @@
         </div>
     </main>
 
-    {# ======================= Footer ======================= #}
-    <footer class="eh-footer py-3 mt-auto">
-        <div class="container d-flex flex-column flex-sm-row justify-content-between gap-1 small">
-            <span>&copy; 2026 EventHub</span>
-            <span>ระบบค้นหาและสมัครกิจกรรมสำหรับนักศึกษา</span>
-        </div>
-    </footer>
-
     {# Bootstrap JS: ทำให้ปุ่มเมนูมือถือและปุ่มปิดแจ้งเตือนทำงาน #}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     {# JS ส่วนกลางของทีม #}
-    <script src="{% static 'js/main.js' %}"></script>
+        <script src="{% static 'js/main.js' %}?v=11"></script>
 
     {# JS เฉพาะหน้า #}
     {% block extra_js %}{% endblock %}

@@ -1,87 +1,361 @@
-
 {% extends "base.html" %}
 
-{% block title %}
-    {% if event %}
-        Edit Event - EventHub
-    {% else %}
-        Create Event - EventHub
-    {% endif %}
+{% block title %}{% if event %}แก้ไขกิจกรรม{% else %}สร้างกิจกรรม{% endif %} | EventHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ===== โครงหน้า: ซ้ายฟอร์มเป็นหมวด / ขวาตัวอย่างการ์ดที่นักศึกษาจะเห็น ===== */
+    .ef-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        gap: 1.5rem;
+        align-items: start;
+    }
+    .ef-main {
+        display: grid;
+        gap: 1.25rem;
+        min-width: 0;
+    }
+    .ef-section {
+        background: var(--eh-card);
+        border: 1px solid var(--eh-border);
+        border-radius: 14px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 2px rgba(17, 24, 39, 0.06), 0 4px 12px rgba(17, 24, 39, 0.04);
+        display: grid;
+        gap: 1.1rem;
+    }
+    .ef-section-head {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .ef-section-head .icon {
+        width: 2.3rem;
+        height: 2.3rem;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        color: var(--eh-primary);
+        background: var(--eh-primary-soft);
+        flex-shrink: 0;
+    }
+    .ef-section-head h2 {
+        font-size: 1.05rem;
+        margin: 0;
+    }
+    .ef-section-head p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--eh-text-muted);
+    }
+
+    .ef-field {
+        display: grid;
+        gap: 0.4rem;
+        min-width: 0;
+        align-content: start;
+    }
+    .ef-field > label:not(.ef-drop),
+    .ef-label {
+        font-weight: 500;
+        font-size: 0.92rem;
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+    .ef-label small {
+        font-weight: 400;
+        color: var(--eh-text-muted);
+    }
+    .ef-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+    .ef-row-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+    }
+    .ef-hint {
+        font-size: 0.82rem;
+        color: var(--eh-text-muted);
+    }
+    .ef-field .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 0.85rem;
+        color: #B91C1C;
+    }
+
+    /* ระบบตรวจข้อมูลแบบ realtime (ของคนที่ 2) */
+    .realtime-error {
+        color: #B91C1C;
+        font-size: 0.85rem;
+    }
+    .realtime-error:empty {
+        display: none;
+    }
+    .realtime-invalid {
+        border-color: #F87171 !important;
+        background-color: #FEF2F2 !important;
+    }
+
+    /* ===== โปสเตอร์: ลากไฟล์มาวาง หรือกดเลือก แล้วเห็นตัวอย่างทันที ===== */
+    .ef-drop {
+        position: relative;
+        border: 2px dashed #D1D5DB;
+        border-radius: 14px;
+        background: #F8FAFC;
+        min-height: 190px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 1.25rem;
+        cursor: pointer;
+        transition: border-color 0.2s ease, background 0.2s ease;
+        overflow: hidden;
+    }
+    .ef-drop:hover,
+    .ef-drop.is-dragover {
+        border-color: var(--eh-brand-orange);
+        background: #FFF7ED;
+    }
+    .ef-drop input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+    .ef-drop-empty i {
+        font-size: 2rem;
+        color: var(--eh-primary);
+    }
+    .ef-drop-empty strong {
+        display: block;
+        margin-top: 0.35rem;
+    }
+    .ef-drop-empty span {
+        font-size: 0.85rem;
+        color: var(--eh-text-muted);
+    }
+    .ef-drop.has-image {
+        border-style: solid;
+        padding: 0;
+        background: #0F172A;
+    }
+    .ef-drop img {
+        width: 100%;
+        max-width: 100%;
+        max-height: 320px;
+        object-fit: contain;
+        display: block;
+    }
+    .ef-file-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        font-size: 0.88rem;
+        color: var(--eh-text-muted);
+    }
+    .ef-file-bar strong {
+        color: var(--eh-text);
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* ===== หมวดหมู่: ป้ายกดเลือก ===== */
+    .ef-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .ef-chip {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.45rem 0.85rem;
+        border: 1px solid var(--eh-border);
+        border-radius: 999px;
+        background: #FFFFFF;
+        font-size: 0.88rem;
+        cursor: pointer;
+        user-select: none;
+        transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    }
+    .ef-chip:hover {
+        border-color: var(--eh-brand-orange);
+        transform: translateY(-1px);
+    }
+    .ef-chip input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .ef-chip .bi-check-lg {
+        opacity: 0;
+    }
+    .ef-chip:has(input:checked) {
+        background: var(--eh-primary);
+        border-color: var(--eh-primary);
+        color: #FFFFFF;
+    }
+    .ef-chip:has(input:checked) .bi-check-lg {
+        opacity: 1;
+    }
+    .ef-chip:has(input:focus-visible) {
+        outline: 2px solid var(--eh-brand-orange);
+        outline-offset: 2px;
+    }
+
+    /* ===== สรุปช่วงเวลาอัตโนมัติ ===== */
+    .ef-timeline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .ef-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        background: #F1F5F9;
+        font-size: 0.85rem;
+        color: var(--eh-text-muted);
+    }
+    .ef-pill.is-ok   { background: var(--eh-open-bg);  color: var(--eh-open); }
+    .ef-pill.is-warn { background: #FEF2F2;            color: #B91C1C; }
+
+    /* ===== จำนวนผู้เข้าร่วม: ปุ่ม - / + ===== */
+    .ef-stepper {
+        display: flex;
+        align-items: stretch;
+    }
+    .ef-stepper input {
+        text-align: center;
+        border-radius: 0 !important;
+        font-variant-numeric: tabular-nums;
+        -moz-appearance: textfield;
+    }
+    .ef-stepper input::-webkit-outer-spin-button,
+    .ef-stepper input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    .ef-stepper button {
+        width: 2.75rem;
+        border: 1px solid var(--bs-border-color);
+        background: #F8FAFC;
+        color: var(--eh-text);
+        font-size: 1.1rem;
+    }
+    .ef-stepper button:first-child { border-radius: 8px 0 0 8px; border-right: 0; }
+    .ef-stepper button:last-child  { border-radius: 0 8px 8px 0; border-left: 0; }
+    .ef-stepper button:hover { background: #FFF7ED; color: var(--eh-primary); }
+
+    /* ===== สถานะ: สวิตช์สองฝั่ง ===== */
+    .ef-segment {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.25rem;
+        padding: 0.25rem;
+        border-radius: 10px;
+        background: #F1F5F9;
+    }
+    .ef-segment label {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        padding: 0.5rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--eh-text-muted);
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .ef-segment input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+    .ef-segment label:has(input:checked) {
+        background: #FFFFFF;
+        color: var(--eh-text);
+        box-shadow: 0 1px 3px rgba(17, 24, 39, 0.12);
+    }
+    .ef-segment label:has(input[value="OPEN"]:checked) i { color: var(--eh-open); }
+    .ef-segment label:has(input:focus-visible) { outline: 2px solid var(--eh-brand-orange); }
+
+    /* ===== ปุ่มด้านล่าง ===== */
+    .ef-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .ef-actions .btn {
+        margin-top: 0;
+        padding-block: 0.7rem;
+    }
+
+    /* ===== ขวา: ตัวอย่างการ์ด (ติดหน้าจอตอนเลื่อน) ===== */
+    .ef-preview {
+        position: sticky;
+        top: 84px;
+        display: grid;
+        gap: 0.6rem;
+    }
+    .ef-preview-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--eh-text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .ef-preview .eh-event-card {
+        pointer-events: none;
+    }
+    .ef-preview .eh-event-title:empty::before { content: "ชื่อกิจกรรม"; color: #9CA3AF; }
+    .ef-preview .eh-event-org:empty::before   { content: "ชื่อชุมนุม / หน่วยงาน"; color: #9CA3AF; }
+
+    @media (max-width: 992px) {
+        .ef-layout { grid-template-columns: minmax(0, 1fr); }
+        .ef-preview { position: static; order: -1; }
+    }
+    @media (max-width: 640px) {
+        .ef-row, .ef-row-3 { grid-template-columns: minmax(0, 1fr); }
+        .ef-section { padding: 1.15rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .ef-chip, .ef-drop, .ef-segment label { transition: none; }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 
-<style>
-    .poster-upload-row {
-    display: block;
-    margin-bottom: 16px;
-}
+<a class="eh-back" href="{% url 'events:event_list' %}"><i class="bi bi-arrow-left"></i> กลับไปกิจกรรมของฉัน</a>
 
-.poster-upload-row label {
-    display: block;
-    margin-bottom: 8px;
-}
+<header class="eh-page-head">
+    <div>
+        <h1>{% if event %}แก้ไขกิจกรรม{% else %}สร้างกิจกรรม{% endif %}</h1>
+        <p>{% if event %}แก้ไขข้อมูลแล้วกดบันทึก นักศึกษาจะเห็นข้อมูลใหม่ทันที{% else %}กรอกข้อมูลทีละส่วน ด้านขวาคือการ์ดที่นักศึกษาจะเห็น{% endif %}</p>
+    </div>
+</header>
 
-.poster-clear-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 4px;
-}
-
-.poster-upload-row .poster-clear-row label {
-    display: inline;
-    margin: 0;
-}
-
-.poster-clear-row input[type="checkbox"] {
-    margin: 0;
-}
-
-.poster-upload-row input[type="file"] {
-    display: block;
-    width: auto;
-    max-width: 100%;
-    margin-top: 8px;
-}
-
-
-
-.poster-upload-row small {
-    display: block;
-    color: #666;
-    margin-top: 8px;
-}
-
-    .realtime-error {
-        color: #dc3545;
-        font-size: 0.875rem;
-        margin-top: 5px;
-        display: block;
-    }
-
-    .realtime-invalid {
-        border-color: #dc3545 !important;
-    }
-
-    .field-container {
-        margin-bottom: 16px;
-    }
-</style>
-
-{% if event %}
-    <h2>Edit Event</h2>
-    <p>Update your event information.</p>
-
-    {% if event.poster %}
-        <p>Current Poster:</p>
-        <img src="{{ event.poster.url }}"
-             alt="{{ event.title }}"
-             style="max-width: 300px; height: auto;">
-    {% endif %}
-{% else %}
-    <h2>Create New Event</h2>
-    <p>กรอกข้อมูลด้านล่างเพื่อสร้างกิจกรรม</p>
+{% if form.non_field_errors %}
+    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
 {% endif %}
 
 <form method="POST"
@@ -91,47 +365,403 @@
       novalidate>
     {% csrf_token %}
 
-    {{ form.non_field_errors }}
+    <div class="ef-layout">
+        <div class="ef-main">
 
-    {% for field in form %}
-        <div class="field-container">
-
-            {% if field.name == "poster" %}
-                <div class="poster-upload-row">
-                    {{ field.label_tag }}
-                    {{ field }}
-                    <small>(ขนาดไฟล์ไม่เกิน 5 MB)</small>
+            {# ==================== 1. ข้อมูลกิจกรรม ==================== #}
+            <section class="ef-section">
+                <div class="ef-section-head">
+                    <span class="icon"><i class="bi bi-card-text"></i></span>
+                    <div><h2>ข้อมูลกิจกรรม</h2><p>ชื่อ ผู้จัด และรายละเอียดที่นักศึกษาจะอ่าน</p></div>
                 </div>
-            {% else %}
-                {{ field.as_field_group }}
-            {% endif %}
 
-            {% if field.errors %}
-                {{ field.errors }}
-            {% endif %}
+                <div class="ef-row">
+                    <div class="ef-field">
+                        <label for="{{ form.organization_name.id_for_label }}">ชื่อชุมนุม / หน่วยงาน</label>
+                        {{ form.organization_name }}
+                        {{ form.organization_name.errors }}
+                        <span id="realtime-error-organization_name" class="realtime-error" aria-live="polite"></span>
+                    </div>
+                    <div class="ef-field">
+                        <label for="{{ form.title.id_for_label }}">ชื่อกิจกรรม</label>
+                        {{ form.title }}
+                        {{ form.title.errors }}
+                        <span id="realtime-error-title" class="realtime-error" aria-live="polite"></span>
+                    </div>
+                </div>
 
-            <span
-                id="realtime-error-{{ field.name }}"
-                class="realtime-error"
-                aria-live="polite">
-            </span>
+                <div class="ef-field">
+                    <label for="{{ form.description.id_for_label }}">
+                        รายละเอียดกิจกรรม
+                        <small id="descCount">0 ตัวอักษร</small>
+                    </label>
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                    <span id="realtime-error-description" class="realtime-error" aria-live="polite"></span>
+                </div>
 
+                <div class="ef-field">
+                    <span class="ef-label">
+                        หมวดหมู่กิจกรรม
+                        <small id="catCount">ยังไม่ได้เลือก</small>
+                    </span>
+                    <div class="ef-chips" role="group" aria-label="หมวดหมู่กิจกรรม">
+                        {% for checkbox in form.categories %}
+                            <label class="ef-chip">
+                                {{ checkbox.tag }}
+                                <i class="bi bi-check-lg" aria-hidden="true"></i>
+                                <span>{{ checkbox.choice_label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {{ form.categories.errors }}
+                </div>
+            </section>
+
+            {# ==================== 2. โปสเตอร์ ==================== #}
+            <section class="ef-section">
+                <div class="ef-section-head">
+                    <span class="icon"><i class="bi bi-image"></i></span>
+                    <div><h2>โปสเตอร์</h2><p>ไม่บังคับ ถ้ามีจะช่วยให้กิจกรรมเด่นขึ้นมาก</p></div>
+                </div>
+
+                <div class="ef-field">
+                    <label class="ef-drop {% if event.poster %}has-image{% endif %}" id="posterDrop" for="id_poster">
+                        <input type="file" name="poster" id="id_poster" accept="image/*">
+                        <div class="ef-drop-empty" id="posterEmpty" {% if event.poster %}hidden{% endif %}>
+                            <i class="bi bi-cloud-arrow-up"></i>
+                            <strong>ลากรูปมาวางที่นี่ หรือกดเพื่อเลือกไฟล์</strong>
+                            <span>ไฟล์รูปภาพ JPG หรือ PNG ขนาดไม่เกิน 5 MB</span>
+                        </div>
+                        <img id="posterImg" alt="ตัวอย่างโปสเตอร์"
+                             {% if event.poster %}src="{{ event.poster.url }}"{% else %}hidden{% endif %}>
+                    </label>
+
+                    <div class="ef-file-bar" id="posterBar" {% if not event.poster %}hidden{% endif %}>
+                        <strong id="posterName">{% if event.poster %}โปสเตอร์ปัจจุบัน{% endif %}</strong>
+                        <button type="button" class="btn btn-sm btn-outline-danger" id="posterRemove">
+                            <i class="bi bi-x-lg"></i> เอารูปออก
+                        </button>
+                    </div>
+
+                    {% if event.poster %}
+                        {# ตอนแก้ไข: ติ๊กช่องนี้ (ซ่อนไว้) เมื่อกด "เอารูปออก" เพื่อลบโปสเตอร์เดิม #}
+                        <input type="checkbox" name="poster-clear" id="poster-clear_id" hidden>
+                    {% endif %}
+
+                    {{ form.poster.errors }}
+                    <span id="realtime-error-poster" class="realtime-error" aria-live="polite"></span>
+                </div>
+            </section>
+
+            {# ==================== 3. วันและเวลา ==================== #}
+            <section class="ef-section">
+                <div class="ef-section-head">
+                    <span class="icon"><i class="bi bi-calendar3"></i></span>
+                    <div><h2>วันและเวลา</h2><p>ต้องปิดรับสมัครก่อนเริ่มกิจกรรมอย่างน้อย 24 ชั่วโมง</p></div>
+                </div>
+
+                <div class="ef-row-3">
+                    <div class="ef-field">
+                        <label for="{{ form.start_datetime.id_for_label }}">เริ่มกิจกรรม</label>
+                        {{ form.start_datetime }}
+                        {{ form.start_datetime.errors }}
+                        <span id="realtime-error-start_datetime" class="realtime-error" aria-live="polite"></span>
+                    </div>
+                    <div class="ef-field">
+                        <label for="{{ form.end_datetime.id_for_label }}">สิ้นสุดกิจกรรม</label>
+                        {{ form.end_datetime }}
+                        {{ form.end_datetime.errors }}
+                        <span id="realtime-error-end_datetime" class="realtime-error" aria-live="polite"></span>
+                    </div>
+                    <div class="ef-field">
+                        <label for="{{ form.registration_deadline.id_for_label }}">ปิดรับสมัคร</label>
+                        {{ form.registration_deadline }}
+                        {{ form.registration_deadline.errors }}
+                        <span id="realtime-error-registration_deadline" class="realtime-error" aria-live="polite"></span>
+                    </div>
+                </div>
+
+                {# สรุปให้อัตโนมัติจากวันเวลาที่เลือก #}
+                <div class="ef-timeline" id="timeSummary" aria-live="polite"></div>
+            </section>
+
+            {# ==================== 4. การรับสมัคร ==================== #}
+            <section class="ef-section">
+                <div class="ef-section-head">
+                    <span class="icon"><i class="bi bi-people"></i></span>
+                    <div><h2>การรับสมัคร</h2><p>สถานที่ จำนวนที่นั่ง และช่องทางสมัคร</p></div>
+                </div>
+
+                <div class="ef-field">
+                    <label for="{{ form.location.id_for_label }}">สถานที่จัดกิจกรรม</label>
+                    {{ form.location }}
+                    {{ form.location.errors }}
+                    <span id="realtime-error-location" class="realtime-error" aria-live="polite"></span>
+                </div>
+
+                <div class="ef-row">
+                    <div class="ef-field">
+                        <label for="{{ form.max_participants.id_for_label }}">จำนวนที่นั่ง</label>
+                        <div class="ef-stepper">
+                            <button type="button" data-step="-1" aria-label="ลดจำนวนที่นั่ง"><i class="bi bi-dash"></i></button>
+                            {{ form.max_participants }}
+                            <button type="button" data-step="1" aria-label="เพิ่มจำนวนที่นั่ง"><i class="bi bi-plus"></i></button>
+                        </div>
+                        {{ form.max_participants.errors }}
+                        <span id="realtime-error-max_participants" class="realtime-error" aria-live="polite"></span>
+                    </div>
+
+                    <div class="ef-field">
+                        <span class="ef-label">สถานะการรับสมัคร</span>
+                        <div class="ef-segment" role="radiogroup" aria-label="สถานะการรับสมัคร">
+                            {% with current=form.status.value|default:"OPEN" %}
+                            {% for value, label in form.status.field.choices %}
+                                <label>
+                                    <input type="radio" name="status" value="{{ value }}" {% if current == value %}checked{% endif %}>
+                                    {% if value == "OPEN" %}<i class="bi bi-unlock"></i> เปิดรับสมัคร{% else %}<i class="bi bi-lock"></i> ปิดรับสมัคร{% endif %}
+                                </label>
+                            {% endfor %}
+                            {% endwith %}
+                        </div>
+                        {{ form.status.errors }}
+                    </div>
+                </div>
+
+                <div class="ef-field">
+                    <label for="{{ form.google_form_url.id_for_label }}">ลิงก์ Google Forms สำหรับลงทะเบียน</label>
+                    {{ form.google_form_url }}
+                    <span class="ef-hint">หลังนักศึกษากดสมัครในเว็บ ระบบจะพาไปกรอกแบบฟอร์มนี้ต่อ</span>
+                    {{ form.google_form_url.errors }}
+                    <span id="realtime-error-google_form_url" class="realtime-error" aria-live="polite"></span>
+                </div>
+            </section>
+
+            <div class="ef-actions">
+                <a href="{% url 'events:event_list' %}" class="btn btn-outline-secondary px-4">ยกเลิก</a>
+                <button type="submit" class="btn btn-primary eh-submit px-4"
+                        data-loading-text="{% if event %}กำลังบันทึก...{% else %}กำลังสร้าง...{% endif %}">
+                    {% if event %}บันทึกการแก้ไข{% else %}สร้างกิจกรรม{% endif %}
+                </button>
+            </div>
         </div>
-    {% endfor %}
 
-    <button type="submit">
-        {% if event %}
-            Update Event
-        {% else %}
-            Create Event
-        {% endif %}
-    </button>
-
-    <a href="{% url 'events:event_list' %}">
-        Cancel
-    </a>
+        {# ==================== ขวา: ตัวอย่างการ์ด ==================== #}
+        <aside class="ef-preview" aria-label="ตัวอย่างการ์ดกิจกรรม">
+            <span class="ef-preview-label"><i class="bi bi-eye"></i> ตัวอย่างที่นักศึกษาจะเห็น</span>
+            <div class="eh-event-card">
+                <div class="eh-event-poster" id="pvPosterBox">
+                    <i class="bi bi-calendar-event" id="pvPosterIcon"></i>
+                </div>
+                <div class="eh-event-body">
+                    <span class="eh-event-org" id="pvOrg"></span>
+                    <h3 class="eh-event-title" id="pvTitle"></h3>
+                    <ul class="eh-meta">
+                        <li><i class="bi bi-calendar3"></i><span id="pvDate">ยังไม่ได้เลือกวัน</span></li>
+                        <li><i class="bi bi-geo-alt"></i><span id="pvLocation">ยังไม่ได้ระบุสถานที่</span></li>
+                    </ul>
+                    <div class="eh-seat-label small text-secondary d-flex justify-content-between">
+                        <span>สมัครแล้ว 0 / <span id="pvSeats">-</span></span>
+                        <span id="pvStatus"></span>
+                    </div>
+                    <div class="eh-seat-track"><div class="eh-seat-fill" style="width: 0;"></div></div>
+                    <div class="eh-event-foot">
+                        <span class="eh-countdown" id="pvCountdown"><i class="bi bi-clock"></i><span>ยังไม่ได้กำหนดวันปิดรับ</span></span>
+                        <span class="btn btn-sm btn-outline-primary">ดูรายละเอียด</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
 </form>
 
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var thaiDate = new Intl.DateTimeFormat("th-TH", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+
+    // ---------- 1. โปสเตอร์: เลือกหรือลากไฟล์แล้วเห็นตัวอย่างทันที ----------
+    var posterInput = $("id_poster");
+    var drop = $("posterDrop");
+    var img = $("posterImg");
+    var empty = $("posterEmpty");
+    var bar = $("posterBar");
+    var nameText = $("posterName");
+    var clearBox = $("poster-clear_id");
+    var pvBox = $("pvPosterBox");
+
+    function showPoster(src, label) {
+        img.src = src;
+        img.hidden = false;
+        empty.hidden = true;
+        bar.hidden = false;
+        nameText.textContent = label;
+        drop.classList.add("has-image");
+        pvBox.innerHTML = '<img class="eh-event-poster" alt="" src="' + src + '">';
+    }
+    function hidePoster() {
+        img.removeAttribute("src");
+        img.hidden = true;
+        empty.hidden = false;
+        bar.hidden = true;
+        drop.classList.remove("has-image");
+        pvBox.innerHTML = '<i class="bi bi-calendar-event"></i>';
+    }
+    if (img.getAttribute("src")) {
+        pvBox.innerHTML = '<img class="eh-event-poster" alt="" src="' + img.getAttribute("src") + '">';
+    }
+
+    posterInput.addEventListener("change", function () {
+        var file = posterInput.files[0];
+        if (!file) {
+            return;
+        }
+        if (!file.type.startsWith("image/")) {
+            posterInput.value = "";
+            $("realtime-error-poster").textContent = "เลือกได้เฉพาะไฟล์รูปภาพ";
+            return;
+        }
+        if (clearBox) {
+            clearBox.checked = false;
+        }
+        var size = file.size >= 1024 * 1024
+            ? (file.size / 1024 / 1024).toFixed(1) + " MB"
+            : Math.max(1, Math.round(file.size / 1024)) + " KB";
+        showPoster(URL.createObjectURL(file), file.name + " · " + size);
+    });
+
+    ["dragenter", "dragover"].forEach(function (type) {
+        drop.addEventListener(type, function (event) {
+            event.preventDefault();
+            drop.classList.add("is-dragover");
+        });
+    });
+    ["dragleave", "drop"].forEach(function (type) {
+        drop.addEventListener(type, function () {
+            drop.classList.remove("is-dragover");
+        });
+    });
+    drop.addEventListener("drop", function (event) {
+        event.preventDefault();
+        if (event.dataTransfer.files.length) {
+            posterInput.files = event.dataTransfer.files;
+            posterInput.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+    });
+
+    $("posterRemove").addEventListener("click", function () {
+        posterInput.value = "";
+        if (clearBox) {
+            clearBox.checked = true;   // ตอนแก้ไข: บอก Django ให้ลบโปสเตอร์เดิม
+        }
+        hidePoster();
+        posterInput.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+
+    // ---------- 2. นับตัวอักษรรายละเอียด ----------
+    var desc = $("id_description");
+    function countDesc() {
+        $("descCount").textContent = desc.value.trim().length + " ตัวอักษร";
+    }
+    desc.addEventListener("input", countDesc);
+    countDesc();
+
+    // ---------- 3. หมวดหมู่: นับจำนวนที่เลือก ----------
+    var cats = document.querySelectorAll('input[name="categories"]');
+    function countCats() {
+        var n = document.querySelectorAll('input[name="categories"]:checked').length;
+        $("catCount").textContent = n ? "เลือกแล้ว " + n + " หมวด" : "ยังไม่ได้เลือก";
+    }
+    cats.forEach(function (box) { box.addEventListener("change", countCats); });
+    countCats();
+
+    // ---------- 4. จำนวนที่นั่ง: ปุ่ม - / + ----------
+    var seats = $("id_max_participants");
+    document.querySelectorAll(".ef-stepper button").forEach(function (button) {
+        button.addEventListener("click", function () {
+            var next = Math.max((parseInt(seats.value, 10) || 0) + parseInt(button.dataset.step, 10), 1);
+            seats.value = next;
+            seats.dispatchEvent(new Event("input", { bubbles: true }));
+        });
+    });
+
+    // ---------- 5. สรุปช่วงเวลา + ตัวอย่างการ์ด อัปเดตตามที่พิมพ์ ----------
+    var start = $("id_start_datetime");
+    var end = $("id_end_datetime");
+    var deadline = $("id_registration_deadline");
+
+    function toDate(input) {
+        if (!input.value) { return null; }
+        var d = new Date(input.value);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    function duration(ms) {
+        var mins = Math.round(ms / 60000);
+        var days = Math.floor(mins / 1440);
+        var hours = Math.floor((mins % 1440) / 60);
+        var rest = mins % 60;
+        var parts = [];
+        if (days) { parts.push(days + " วัน"); }
+        if (hours) { parts.push(hours + " ชม."); }
+        if (rest && !days) { parts.push(rest + " นาที"); }
+        return parts.join(" ") || "0 นาที";
+    }
+    function pill(cls, icon, text) {
+        return '<span class="ef-pill ' + cls + '"><i class="bi bi-' + icon + '"></i>' + text + "</span>";
+    }
+
+    function updateSummary() {
+        var s = toDate(start), e = toDate(end), d = toDate(deadline), html = "";
+        if (s && e) {
+            html += e > s
+                ? pill("is-ok", "hourglass-split", "กิจกรรมยาว " + duration(e - s))
+                : pill("is-warn", "exclamation-circle", "เวลาสิ้นสุดต้องอยู่หลังเวลาเริ่ม");
+        }
+        if (s && d) {
+            var gap = s - d;
+            html += gap >= 24 * 3600000
+                ? pill("is-ok", "check-circle", "ปิดรับก่อนเริ่ม " + duration(gap))
+                : pill("is-warn", "exclamation-circle", "ต้องปิดรับก่อนเริ่มอย่างน้อย 24 ชม.");
+        }
+        if (d && d > new Date()) {
+            html += pill("", "clock", "เปิดรับอีก " + duration(d - new Date()));
+        }
+        $("timeSummary").innerHTML = html;
+
+        $("pvDate").textContent = s ? thaiDate.format(s) + " น." : "ยังไม่ได้เลือกวัน";
+        var cd = $("pvCountdown").querySelector("span");
+        cd.textContent = d ? "ปิดรับ " + thaiDate.format(d) + " น." : "ยังไม่ได้กำหนดวันปิดรับ";
+    }
+
+    function updatePreview() {
+        $("pvOrg").textContent = $("id_organization_name").value.trim();
+        $("pvTitle").textContent = $("id_title").value.trim();
+        $("pvLocation").textContent = $("id_location").value.trim() || "ยังไม่ได้ระบุสถานที่";
+        $("pvSeats").textContent = seats.value || "-";
+        var status = document.querySelector('input[name="status"]:checked');
+        $("pvStatus").innerHTML = status && status.value === "OPEN"
+            ? '<span class="badge eh-status-open">เปิดรับสมัคร</span>'
+            : '<span class="badge eh-status-closed">ปิดรับสมัคร</span>';
+    }
+
+    [start, end, deadline].forEach(function (input) {
+        input.addEventListener("change", updateSummary);
+        input.addEventListener("input", updateSummary);
+    });
+    ["id_organization_name", "id_title", "id_location", "id_max_participants"].forEach(function (id) {
+        $(id).addEventListener("input", updatePreview);
+    });
+    document.querySelectorAll('input[name="status"]').forEach(function (r) {
+        r.addEventListener("change", updatePreview);
+    });
+    updateSummary();
+    updatePreview();
+});
+</script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
