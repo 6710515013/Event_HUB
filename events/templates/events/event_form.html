@@ -490,7 +490,7 @@
             <section class="ef-section">
                 <div class="ef-section-head">
                     <span class="icon"><i class="bi bi-people"></i></span>
-                    <div><h2>การรับสมัคร</h2><p>สถานที่ จำนวนที่นั่ง และช่องทางสมัคร</p></div>
+                    <div><h2>การรับสมัคร</h2><p>สถานที่ จำนวนที่รับ และช่องทางสมัคร</p></div>
                 </div>
 
                 <div class="ef-field">
@@ -502,12 +502,13 @@
 
                 <div class="ef-row">
                     <div class="ef-field">
-                        <label for="{{ form.max_participants.id_for_label }}">จำนวนที่นั่ง</label>
+                        <label for="{{ form.max_participants.id_for_label }}">จำนวนที่รับ</label>
                         <div class="ef-stepper">
-                            <button type="button" data-step="-1" aria-label="ลดจำนวนที่นั่ง"><i class="bi bi-dash"></i></button>
+                            <button type="button" data-step="-1" aria-label="ลดจำนวนที่รับ"><i class="bi bi-dash"></i></button>
                             {{ form.max_participants }}
-                            <button type="button" data-step="1" aria-label="เพิ่มจำนวนที่นั่ง"><i class="bi bi-plus"></i></button>
+                            <button type="button" data-step="1" aria-label="เพิ่มจำนวนที่รับ"><i class="bi bi-plus"></i></button>
                         </div>
+                        <span class="ef-hint">จำนวนคนที่จะคัดเลือกจริง นักศึกษากดสนใจได้ไม่จำกัด</span>
                         {{ form.max_participants.errors }}
                         <span id="realtime-error-max_participants" class="realtime-error" aria-live="polite"></span>
                     </div>
@@ -561,10 +562,10 @@
                         <li><i class="bi bi-geo-alt"></i><span id="pvLocation">ยังไม่ได้ระบุสถานที่</span></li>
                     </ul>
                     <div class="eh-seat-label small text-secondary d-flex justify-content-between">
-                        <span>สมัครแล้ว 0 / <span id="pvSeats">-</span></span>
-                        <span id="pvStatus"></span>
+                        <span><i class="bi bi-people"></i> สนใจแล้ว 0 คน</span>
+                        <span>รับ <span id="pvSeats">-</span> คน</span>
                     </div>
-                    <div class="eh-seat-track"><div class="eh-seat-fill" style="width: 0;"></div></div>
+                    <div><span id="pvStatus"></span></div>
                     <div class="eh-event-foot">
                         <span class="eh-countdown" id="pvCountdown"><i class="bi bi-clock"></i><span>ยังไม่ได้กำหนดวันปิดรับ</span></span>
                         <span class="btn btn-sm btn-outline-primary">ดูรายละเอียด</span>

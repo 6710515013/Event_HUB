@@ -921,3 +921,18 @@ a.eh-stat:hover {
     margin: 0.25rem 0 0;
     padding-left: 1.1rem;
 }
+
+/* =====================================================================
+   22. การ์ดกิจกรรมใน Student Dashboard: ปุ่มดูรายละเอียดชิดขวาล่าง
+   ===================================================================== */
+.dashboard-item {
+    display: flex;
+    flex-direction: column;
+}
+.dashboard-item .eh-event-foot {
+    margin-top: auto;
+    padding-top: 0.75rem;
+}
+.eh-event-foot .register-btn {
+    margin-top: 0;
+}

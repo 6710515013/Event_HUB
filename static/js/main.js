@@ -166,43 +166,21 @@ function setupCopyButtons() {
 
 
 // ---------------------------------------------------------------------
-// 6. แถบที่นั่ง: <div class="eh-seat" data-count="28" data-max="40"></div>
-//    เหลือไม่เกิน 20% = "ใกล้เต็ม" (สีเหลือง), เต็มแล้ว = "เต็มแล้ว" (สีเทา)
+// 6. จำนวนผู้สนใจ: <div class="eh-seat" data-count="28" data-max="40"></div>
+//    ไม่จำกัดจำนวนคนกดสมัคร (ผู้จัดคัดเลือกผ่าน Google Form)
+//    จึงแสดงแค่ "สนใจแล้ว N คน" และ "รับ M คน" ไม่มีคำว่าเต็ม
 // ---------------------------------------------------------------------
 function updateSeatBars() {
     document.querySelectorAll(".eh-seat:not([data-ready])").forEach(function (seat) {
         var count = parseInt(seat.dataset.count, 10) || 0;
         var max = parseInt(seat.dataset.max, 10) || 0;
-        if (max <= 0) {
-            return;
-        }
-        var left = Math.max(max - count, 0);
-        var percent = Math.min(Math.round((count / max) * 100), 100);
-
-        var state = "เหลือ " + left + " ที่";
-        if (left === 0) {
-            seat.classList.add("is-full");
-            state = "เต็มแล้ว";
-        } else if (left <= Math.ceil(max * 0.2)) {
-            seat.classList.add("is-almost");
-            state = "ใกล้เต็ม เหลือ " + left + " ที่";
-        }
 
         seat.innerHTML =
             '<div class="eh-seat-label">' +
-                "<span>สมัครแล้ว " + count + " / " + max + "</span>" +
-                '<span class="eh-seat-state">' + state + "</span>" +
-            "</div>" +
-            '<div class="eh-seat-track" role="progressbar" aria-valuemin="0" aria-valuemax="' + max +
-                '" aria-valuenow="' + count + '" aria-label="จำนวนผู้สมัคร">' +
-                '<div class="eh-seat-fill"></div>' +
+                '<span><i class="bi bi-people"></i> สนใจแล้ว ' + count + " คน</span>" +
+                (max > 0 ? "<span>รับ " + max + " คน</span>" : "") +
             "</div>";
         seat.dataset.ready = "true";
-
-        // ให้แถบค่อยๆ เต็มขึ้นหลังวาดเสร็จ
-        requestAnimationFrame(function () {
-            seat.querySelector(".eh-seat-fill").style.width = percent + "%";
-        });
     });
 }
 
