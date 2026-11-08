@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
-
-# Stop if any command fails
+# Render รันไฟล์นี้ทุกครั้งที่ deploy
 set -o errexit
 
-# Install dependencies
 pip install -r requirements.txt
-
-# Collect static files
-python manage.py collectstatic --noinput
-
-# Apply database migrations
+python manage.py collectstatic --no-input
 python manage.py migrate
