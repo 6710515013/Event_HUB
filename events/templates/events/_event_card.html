@@ -1,0 +1,29 @@
+{# การ์ดกิจกรรม 1 ใบ ใช้ร่วมกันหลายหน้า: {% include "events/_event_card.html" with event=event count=... %} #}
+<a class="eh-event-card" href="{% url 'events:browse_event_detail' event.id %}">
+    {% if event.poster %}
+        <img class="eh-event-poster" src="{{ event.poster.url }}" alt="โปสเตอร์กิจกรรม {{ event.title }}" loading="lazy">
+    {% else %}
+        <div class="eh-event-poster" aria-hidden="true"><i class="bi bi-calendar-event"></i></div>
+    {% endif %}
+
+    <div class="eh-event-body">
+        <span class="eh-event-org">{{ event.organization_name }}</span>
+        <h3 class="eh-event-title">{{ event.title }}</h3>
+
+        <ul class="eh-meta">
+            <li><i class="bi bi-calendar3"></i><span>{{ event.start_datetime|date:"j M Y · H:i" }} น.</span></li>
+            <li><i class="bi bi-geo-alt"></i><span>{{ event.location }}</span></li>
+        </ul>
+
+        <div class="eh-seat" data-count="{{ count }}" data-max="{{ event.max_participants }}">
+            สมัครแล้ว {{ count }} / {{ event.max_participants }}
+        </div>
+
+        <div class="eh-event-foot">
+            <span class="eh-countdown" data-deadline="{{ event.registration_deadline|date:'c' }}">
+                ปิดรับ {{ event.registration_deadline|date:"j M Y H:i" }}
+            </span>
+            <span class="btn btn-sm btn-outline-primary">ดูรายละเอียด</span>
+        </div>
+    </div>
+</a>

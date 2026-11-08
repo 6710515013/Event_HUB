@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}ค้นหากิจกรรม | EventHub{% endblock %}
+
+{% block content %}
+
+<header class="eh-page-head">
+    <div>
+        <h1>ค้นหากิจกรรม</h1>
+        <p>กิจกรรมที่กำลังเปิดรับสมัครทั้งหมด</p>
+    </div>
+</header>
+
+{# ---------- ค้นหาและกรองวันที่ ---------- #}
+<form method="get" class="eh-panel eh-filter eh-form" role="search">
+    <input type="search" name="q" placeholder="ค้นหาชื่อกิจกรรม" value="{{ query }}" aria-label="ค้นหาชื่อกิจกรรม">
+    <input type="date" name="date" value="{{ selected_date }}" aria-label="วันที่จัดกิจกรรม">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> ค้นหา</button>
+    {% if query or selected_date %}
+        <a class="eh-clear" href="{% url 'events:browse_event_list' %}"><i class="bi bi-x-circle"></i> ล้างการค้นหา</a>
+    {% endif %}
+</form>
+
+{# ---------- รายการกิจกรรม ---------- #}
+{% if events %}
+    <div class="eh-event-grid">
+        {% for event in events %}
+            {% include "events/_event_card.html" with event=event count=event.registrations.count %}
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="eh-panel eh-empty">
+        <i class="bi bi-calendar-x"></i>
+        <strong>ไม่พบกิจกรรมที่เปิดรับสมัคร</strong>
+        {% if query or selected_date %}
+            ลองเปลี่ยนคำค้นหาหรือวันที่ หรือ <a href="{% url 'events:browse_event_list' %}">ดูกิจกรรมทั้งหมด</a>
+        {% else %}
+            ยังไม่มีชุมนุมเปิดรับสมัคร กลับมาดูใหม่ภายหลัง
+        {% endif %}
+    </div>
+{% endif %}
+
+{% endblock %}

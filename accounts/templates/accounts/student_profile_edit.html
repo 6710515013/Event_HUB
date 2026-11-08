@@ -1,0 +1,33 @@
+{# หน้าแก้ไขข้อมูลส่วนตัว #}
+{% extends 'base.html' %}
+
+{% block title %}แก้ไขข้อมูลส่วนตัว | EventHub{% endblock %}
+
+{% block content %}
+<div class="eh-profile-page">
+    <section class="eh-small-card">
+        <h1>แก้ไขข้อมูลส่วนตัว</h1>
+
+        <form method="post" class="eh-form">
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="eh-field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% for err in field.errors %}<span class="eh-error">{{ err }}</span>{% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="eh-form-actions">
+                <button type="submit" class="btn btn-primary" data-loading-text="กำลังบันทึก...">บันทึกข้อมูล</button>
+                <a href="{% url 'student_profile' %}" class="btn btn-outline-secondary">ยกเลิก</a>
+                {# from=edit: ยกเลิกในหน้าเปลี่ยนรหัสผ่านแล้วกลับมาหน้านี้ #}
+                <a href="{% url 'student_password_change' %}?from=edit" class="btn btn-link ms-auto px-0">
+                    <i class="bi bi-key"></i> เปลี่ยนรหัสผ่าน
+                </a>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}

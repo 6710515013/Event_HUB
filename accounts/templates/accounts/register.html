@@ -1,73 +1,163 @@
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | Event Hub</title>
+{% block title %}ลงทะเบียน | EventHub{% endblock %}
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f3f4f6;
-            display: flex;
-            justify-content: center;
-            padding: 40px 15px;
-        }
+{% block content %}
+{# หน้าตาทั้งหมดอยู่ใน static/css/style.css หัวข้อ 15 และ 20 #}
+<div class="eh-auth-page">
+    <section class="eh-auth is-wide" aria-labelledby="register-title">
 
-        .container {
-            background: white;
-            padding: 30px;
-            width: 100%;
-            max-width: 450px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
+        <header class="eh-auth-head">
+            <span class="eh-logo-mark" aria-hidden="true"><i class="bi bi-calendar2-event"></i></span>
+            <h1 id="register-title">ลงทะเบียน</h1>
+            <p id="registerSubtitle">สร้างบัญชีเพื่อค้นหากิจกรรม</p>
+        </header>
 
-        h1 {
-            text-align: center;
-            color: #1f2937;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0 16px;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .errorlist {
-            color: red;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <h1>Event Hub</h1>
-        <h2>Create Account</h2>
-
-        <form method="POST">
+        <form method="post" class="eh-form" novalidate>
             {% csrf_token %}
 
-            {{ form.as_p }}
+            {% if form.non_field_errors %}
+                <div class="eh-auth-error" role="alert">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span>{{ form.non_field_errors.0 }}</span>
+                </div>
+            {% endif %}
 
-            <button type="submit">Register</button>
+            {# ประเภทบัญชี: เลือก Student แล้วจะเห็นช่องรหัสนักศึกษา #}
+            <div class="eh-field">
+                <label>ประเภทบัญชี</label>
+                {% with current=form.role.value|default:"STUDENT" %}
+                <div class="eh-role-pick" id="rolePick">
+                    <label>
+                        <input type="radio" name="role" value="STUDENT" {% if current == "STUDENT" %}checked{% endif %}>
+                        <span><i class="bi bi-mortarboard"></i> นักศึกษา</span>
+                        <small>ค้นหาและสมัครกิจกรรม</small>
+                    </label>
+                    <label>
+                        <input type="radio" name="role" value="ORGANIZER" {% if current == "ORGANIZER" %}checked{% endif %}>
+                        <span><i class="bi bi-megaphone"></i> ผู้จัดกิจกรรม</span>
+                        <small>สร้างและจัดการกิจกรรมของชุมนุม</small>
+                    </label>
+                </div>
+                {% endwith %}
+                {% if form.role.errors %}<span class="eh-error">{{ form.role.errors.0 }}</span>{% endif %}
+            </div>
+
+            <div class="eh-form-row">
+                <div class="eh-field {% if form.first_name.errors %}has-error{% endif %}">
+                    <label for="{{ form.first_name.id_for_label }}">ชื่อ</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}<span class="eh-error">{{ form.first_name.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="eh-field {% if form.last_name.errors %}has-error{% endif %}">
+                    <label for="{{ form.last_name.id_for_label }}">นามสกุล</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}<span class="eh-error">{{ form.last_name.errors.0 }}</span>{% endif %}
+                </div>
+            </div>
+
+            <div class="eh-field" id="studentIdField">
+                <label for="{{ form.student_id.id_for_label }}">รหัสนักศึกษา</label>
+                {{ form.student_id }}
+                {% if form.student_id.errors %}<span class="eh-error">{{ form.student_id.errors.0 }}</span>{% endif %}
+            </div>
+
+            <div class="eh-field {% if form.email.errors %}has-error{% endif %}">
+                <label for="{{ form.email.id_for_label }}">อีเมล</label>
+                {{ form.email }}
+                {% if form.email.errors %}<span class="eh-error">{{ form.email.errors.0 }}</span>{% endif %}
+            </div>
+
+            <div class="eh-field {% if form.username.errors %}has-error{% endif %}">
+                <label for="{{ form.username.id_for_label }}">ชื่อผู้ใช้</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <span class="eh-error">{{ form.username.errors.0 }}</span>
+                {% else %}
+                    <span class="eh-help">ใช้ตัวอักษรภาษาอังกฤษ ตัวเลข และ @ . + - _ ได้</span>
+                {% endif %}
+            </div>
+
+            <div class="eh-field {% if form.password1.errors %}has-error{% endif %}">
+                <label for="{{ form.password1.id_for_label }}">รหัสผ่าน</label>
+                <div class="eh-password">
+                    {{ form.password1 }}
+                    <button type="button" class="eh-eye" aria-label="แสดงรหัสผ่าน"
+                            data-target="{{ form.password1.id_for_label }}">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <small class="eh-caps" hidden><i class="bi bi-capslock"></i> Caps Lock เปิดอยู่</small>
+                {% if form.password1.errors %}
+                    <span class="eh-error">{{ form.password1.errors.0 }}</span>
+                {% else %}
+                    <span class="eh-help">อย่างน้อย 8 ตัวอักษร และไม่ใช่ตัวเลขล้วน</span>
+                {% endif %}
+            </div>
+
+            <div class="eh-field {% if form.password2.errors %}has-error{% endif %}">
+                <label for="{{ form.password2.id_for_label }}">ยืนยันรหัสผ่าน</label>
+                <div class="eh-password">
+                    {{ form.password2 }}
+                    <button type="button" class="eh-eye" aria-label="แสดงรหัสผ่าน"
+                            data-target="{{ form.password2.id_for_label }}">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <span class="eh-match" id="passwordMatch" aria-live="polite"></span>
+                {% if form.password2.errors %}<span class="eh-error">{{ form.password2.errors.0 }}</span>{% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary eh-submit" data-loading-text="กำลังสร้างบัญชี...">
+                สร้างบัญชี
+            </button>
         </form>
 
-        <p>Already have an account?
-            <a href="{% url 'login' %}">Login</a>
-        </p>
-    </div>
-</body>
-</html>
+        <p class="eh-auth-foot">มีบัญชีแล้ว? <a href="{% url 'login' %}">เข้าสู่ระบบ</a></p>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // ---------- 1. เปลี่ยนตามประเภทบัญชี: คำอธิบายใต้หัวข้อ และช่องรหัสนักศึกษา ----------
+    var roleInputs = document.querySelectorAll('#rolePick input[name="role"]');
+    var studentIdField = document.getElementById("studentIdField");
+    var subtitle = document.getElementById("registerSubtitle");
+
+    function updateRole() {
+        var checked = document.querySelector('#rolePick input[name="role"]:checked');
+        var role = checked ? checked.value : "STUDENT";
+        studentIdField.hidden = role !== "STUDENT";
+        subtitle.textContent = role === "STUDENT"
+            ? "สร้างบัญชีเพื่อค้นหากิจกรรม"
+            : "สร้างบัญชีเพื่อจัดกิจกรรม";
+    }
+    roleInputs.forEach(function (input) {
+        input.addEventListener("change", updateRole);
+    });
+    updateRole();
+
+    // ---------- 2. เช็ครหัสผ่านสองช่องตรงกันทันทีที่พิมพ์ ----------
+    var password1 = document.getElementById("{{ form.password1.id_for_label }}");
+    var password2 = document.getElementById("{{ form.password2.id_for_label }}");
+    var matchText = document.getElementById("passwordMatch");
+
+    function checkMatch() {
+        if (!password2.value) {
+            matchText.textContent = "";
+            matchText.className = "eh-match";
+            return;
+        }
+        var same = password1.value === password2.value;
+        matchText.innerHTML = same
+            ? '<i class="bi bi-check-circle"></i> รหัสผ่านตรงกัน'
+            : '<i class="bi bi-x-circle"></i> รหัสผ่านยังไม่ตรงกัน';
+        matchText.className = "eh-match " + (same ? "is-ok" : "is-bad");
+    }
+    password1.addEventListener("input", checkMatch);
+    password2.addEventListener("input", checkMatch);
+});
+</script>
+{% endblock %}

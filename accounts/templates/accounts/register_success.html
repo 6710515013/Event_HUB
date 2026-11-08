@@ -1,14 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Registration Successful</title>
-</head>
-<body>
-    <h1>Event Hub</h1>
-    <h2>Registration Successful!</h2>
-    <p>Your account has been created successfully.</p>
+{% extends "base.html" %}
 
-    <a href="/accounts/register/">Back to Register</a>
-</body>
-</html>
+{% block title %}ลงทะเบียนสำเร็จ | EventHub{% endblock %}
+
+{% block content %}
+<div class="eh-auth-page">
+    <section class="eh-auth text-center" aria-labelledby="success-title">
+        <header class="eh-auth-head mb-4">
+            <span class="eh-logo-mark" style="background: var(--eh-open); box-shadow: 0 4px 14px -4px rgba(21, 128, 61, 0.6);" aria-hidden="true">
+                <i class="bi bi-check-lg"></i>
+            </span>
+            <h1 id="success-title">ลงทะเบียนเรียบร้อยแล้ว</h1>
+            <p>เข้าสู่ระบบด้วยชื่อผู้ใช้และรหัสผ่าน เพื่อเริ่มใช้งาน EventHub</p>
+        </header>
+
+        <a class="btn btn-primary eh-submit w-100" href="{% url 'login' %}">ไปหน้าเข้าสู่ระบบ</a>
+    </section>
+</div>
+{% endblock %}
