@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.title }} | EventHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .eh-detail {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        gap: 1.5rem;
+        align-items: start;
+    }
+    .eh-detail-poster {
+        width: 100%;
+        max-width: 100%;
+        max-height: 460px;
+        object-fit: contain;
+        background: #F8FAFC;
+        border-radius: 12px;
+        margin-bottom: 1.25rem;
+    }
+    .eh-detail h1 {
+        font-size: 1.8rem;
+        margin: 0.25rem 0 1rem;
+        text-wrap: balance;
+    }
+    .eh-detail-desc {
+        white-space: pre-line;
+        line-height: 1.75;
+        max-width: 70ch;
+    }
+    .eh-apply {
+        position: sticky;
+        top: 84px;
+        display: grid;
+        gap: 1rem;
+    }
+    .eh-apply .eh-meta {
+        font-size: 0.93rem;
+        gap: 0.55rem;
+    }
+    .eh-apply .eh-meta strong {
+        display: block;
+        color: var(--eh-text);
+        font-weight: 500;
+    }
+    .eh-apply .btn-primary {
+        width: 100%;
+        padding: 0.75rem;
+    }
+    .eh-apply-note {
+        font-size: 0.82rem;
+        color: var(--eh-text-muted);
+        margin: -0.4rem 0 0;
+    }
+    @media (max-width: 900px) {
+        .eh-detail { grid-template-columns: minmax(0, 1fr); }
+        .eh-apply { position: static; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<a class="eh-back" href="{% url 'events:browse_event_list' %}"><i class="bi bi-arrow-left"></i> กลับไปหน้าค้นหากิจกรรม</a>
+
+<div class="eh-detail">
+
+    {# ---------- ซ้าย: โปสเตอร์และรายละเอียด ---------- #}
+    <article class="eh-panel">
+        {% if event.poster %}
+            <img class="eh-detail-poster" src="{{ event.poster.url }}" alt="โปสเตอร์กิจกรรม {{ event.title }}">
+        {% endif %}
+
+        <span class="eh-event-org">{{ event.organization_name }}</span>
+        <h1>{{ event.title }}</h1>
+
+        {% if event.categories.all %}
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                {% for category in event.categories.all %}
+                    <span class="badge rounded-pill text-bg-light border">{{ category.name }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="eh-detail-desc">{{ event.description }}</div>
+    </article>
+
+    {# ---------- ขวา: กล่องสมัคร (ติดหน้าจอตอนเลื่อน) ---------- #}
+    <aside class="eh-panel eh-apply">
+        <ul class="eh-meta">
+            <li><i class="bi bi-calendar3"></i>
+                <span><strong>วันจัดกิจกรรม</strong>
+                {{ event.start_datetime|date:"j M Y H:i" }} – {{ event.end_datetime|date:"j M Y H:i" }} น.</span></li>
+            <li><i class="bi bi-geo-alt"></i>
+                <span><strong>สถานที่</strong>{{ event.location }}</span></li>
+            <li><i class="bi bi-hourglass-split"></i>
+                <span><strong>ปิดรับสมัคร</strong>{{ event.registration_deadline|date:"j M Y H:i" }} น.</span></li>
+        </ul>
+
+        <div class="eh-seat" data-count="{{ event.registrations.count }}" data-max="{{ event.max_participants }}">
+            สมัครแล้ว {{ event.registrations.count }} / {{ event.max_participants }}
+        </div>
+
+        <span class="eh-countdown" data-deadline="{{ event.registration_deadline|date:'c' }}"></span>
+
+        {% if can_register %}
+            <form method="post" action="{% url 'registrations:apply' event.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary eh-submit" data-loading-text="กำลังสมัคร...">
+                    สมัครเข้าร่วมกิจกรรม
+                </button>
+            </form>
+            {% if event.google_form_url %}
+                <p class="eh-apply-note"><i class="bi bi-box-arrow-up-right"></i> หลังสมัคร ระบบจะพาไปกรอกแบบฟอร์มของผู้จัดต่อ</p>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-secondary mb-0" role="status">
+                <i class="bi bi-lock"></i> กิจกรรมนี้ปิดรับสมัครแล้ว
+            </div>
+        {% endif %}
+    </aside>
+
+</div>
+
+{% endblock %}
