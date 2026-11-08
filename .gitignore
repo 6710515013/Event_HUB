@@ -10,6 +10,8 @@ venv/
 db.sqlite3
 media/
 staticfiles/
+.coverage
+htmlcov/
 
 # Environment variables
 .env
